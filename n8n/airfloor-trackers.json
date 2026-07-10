@@ -1,0 +1,146 @@
+{
+  "name": "AirFloor | Trackers (health + OSS plan)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": { "interval": [ { "field": "cronExpression", "expression": "0 */6 * * *" } ] }
+      },
+      "id": "b1000000-0000-4000-8000-000000000001",
+      "name": "Every 6 hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [-560, 0]
+    },
+    {
+      "parameters": {
+        "url": "https://airfloor.netlify.app/",
+        "options": { "response": { "response": { "fullResponse": true, "neverError": true, "responseFormat": "text" } } }
+      },
+      "id": "b1000000-0000-4000-8000-000000000002",
+      "name": "Site check",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-340, 0]
+    },
+    {
+      "parameters": {
+        "url": "https://airfloor.netlify.app/cityprofiles.json",
+        "options": { "response": { "response": { "fullResponse": true, "neverError": true, "responseFormat": "text" } } }
+      },
+      "id": "b1000000-0000-4000-8000-000000000003",
+      "name": "Profiles check",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-120, 0]
+    },
+    {
+      "parameters": {
+        "url": "https://air-quality-api.open-meteo.com/v1/air-quality?latitude=12.97&longitude=77.59&current=us_aqi",
+        "options": { "response": { "response": { "fullResponse": true, "neverError": true, "responseFormat": "text" } } }
+      },
+      "id": "b1000000-0000-4000-8000-000000000004",
+      "name": "AQI API check",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [100, 0]
+    },
+    {
+      "parameters": {
+        "url": "https://api.netlify.com/api/v1/accounts",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "netlifyApi",
+        "options": { "response": { "response": { "fullResponse": true, "neverError": true, "responseFormat": "text" } } }
+      },
+      "id": "b1000000-0000-4000-8000-000000000005",
+      "name": "Netlify plan check",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [320, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "function grab(name){ try { return $(name).first().json; } catch (e) { return null; } }\nconst failures = [];\nconst site = grab('Site check');\nif (!site || site.statusCode !== 200) failures.push('Site not reachable (status ' + (site && site.statusCode) + ')');\nelse if (typeof site.body === 'string' && site.body.indexOf('AirFloor') < 0) failures.push('Site body does not look like AirFloor');\nconst prof = grab('Profiles check');\nif (!prof || prof.statusCode !== 200) failures.push('cityprofiles.json not reachable (status ' + (prof && prof.statusCode) + ')');\nelse { try { const j = JSON.parse(prof.body); if (!j.cities || j.cities.length < 45) failures.push('cityprofiles.json has ' + (j.cities ? j.cities.length : 0) + ' cities'); } catch (e) { failures.push('cityprofiles.json is not valid JSON'); } }\nconst aqi = grab('AQI API check');\nif (!aqi || aqi.statusCode !== 200) failures.push('Open-Meteo AQI API not reachable (status ' + (aqi && aqi.statusCode) + ')');\nelse { try { const a = JSON.parse(aqi.body); if (!a.current || a.current.us_aqi == null) failures.push('Open-Meteo AQI response missing current.us_aqi'); } catch (e) { failures.push('Open-Meteo AQI response is not valid JSON'); } }\nlet ossActive = false, planName = 'unknown';\nconst acct = grab('Netlify plan check');\nif (acct && acct.statusCode === 200) { try { const list = JSON.parse(acct.body); if (Array.isArray(list) && list.length) { planName = list[0].type_name || 'unknown'; ossActive = planName !== 'Personal' && planName !== 'Free'; } } catch (e) {} }\nreturn [{ json: { ok: failures.length === 0, failures, failureText: failures.join('\\n'), ossActive, planName, checkedAt: new Date().toISOString() } }];"
+      },
+      "id": "b1000000-0000-4000-8000-000000000006",
+      "name": "Evaluate",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [540, 0]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "typeValidation": "strict", "version": 2 },
+          "conditions": [
+            { "id": "t1", "leftValue": "={{ $json.ok }}", "rightValue": false, "operator": { "type": "boolean", "operation": "false", "singleValue": true } }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "b1000000-0000-4000-8000-000000000007",
+      "name": "Problems?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [760, -100]
+    },
+    {
+      "parameters": {
+        "fromEmail": "yash@dropcap.design",
+        "toEmail": "yash@dropcap.design",
+        "subject": "AirFloor tracker | something is failing",
+        "emailFormat": "text",
+        "text": "=These checks failed at {{ $json.checkedAt }}:\n\n{{ $json.failureText }}\n\nSite: https://airfloor.netlify.app",
+        "options": {}
+      },
+      "id": "b1000000-0000-4000-8000-000000000008",
+      "name": "Email alert",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [980, -100]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "typeValidation": "strict", "version": 2 },
+          "conditions": [
+            { "id": "t2", "leftValue": "={{ $json.ossActive }}", "rightValue": true, "operator": { "type": "boolean", "operation": "true", "singleValue": true } }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "b1000000-0000-4000-8000-000000000009",
+      "name": "OSS plan active?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [760, 100]
+    },
+    {
+      "parameters": {
+        "fromEmail": "yash@dropcap.design",
+        "toEmail": "yash@dropcap.design",
+        "subject": "=AirFloor | Netlify plan changed to {{ $json.planName }} | cancel the paid subscription",
+        "emailFormat": "text",
+        "text": "=The Netlify team plan is now \"{{ $json.planName }}\" (no longer Personal).\n\nIf this is the Open Source plan approval, remember the plan: cancel the paid personal subscription at https://app.netlify.com/teams/yash-dropcap/billing",
+        "options": {}
+      },
+      "id": "b1000000-0000-4000-8000-000000000010",
+      "name": "Email cancel reminder",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [980, 100]
+    }
+  ],
+  "connections": {
+    "Every 6 hours": { "main": [ [ { "node": "Site check", "type": "main", "index": 0 } ] ] },
+    "Site check": { "main": [ [ { "node": "Profiles check", "type": "main", "index": 0 } ] ] },
+    "Profiles check": { "main": [ [ { "node": "AQI API check", "type": "main", "index": 0 } ] ] },
+    "AQI API check": { "main": [ [ { "node": "Netlify plan check", "type": "main", "index": 0 } ] ] },
+    "Netlify plan check": { "main": [ [ { "node": "Evaluate", "type": "main", "index": 0 } ] ] },
+    "Evaluate": { "main": [ [ { "node": "Problems?", "type": "main", "index": 0 }, { "node": "OSS plan active?", "type": "main", "index": 0 } ] ] },
+    "Problems?": { "main": [ [ { "node": "Email alert", "type": "main", "index": 0 } ], [] ] },
+    "OSS plan active?": { "main": [ [ { "node": "Email cancel reminder", "type": "main", "index": 0 } ], [] ] }
+  },
+  "settings": { "executionOrder": "v1" }
+}

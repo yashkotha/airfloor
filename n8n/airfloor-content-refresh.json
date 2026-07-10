@@ -1,0 +1,223 @@
+{
+  "name": "AirFloor | Content refresh (LLM, monthly)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": { "interval": [ { "field": "cronExpression", "expression": "0 6 1 * *" } ] }
+      },
+      "id": "a1000000-0000-4000-8000-000000000001",
+      "name": "Monthly 06:00 on the 1st",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [-560, 0]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            { "id": "c1", "name": "DRY_RUN", "type": "boolean", "value": true },
+            { "id": "c2", "name": "SITE", "type": "string", "value": "https://airfloor.netlify.app" },
+            { "id": "c3", "name": "NETLIFY_SITE_ID", "type": "string", "value": "a455bb8d-4297-42c7-87d1-dc9209f57469" },
+            { "id": "c4", "name": "REPO_OWNER", "type": "string", "value": "yashkotha" },
+            { "id": "c5", "name": "REPO", "type": "string", "value": "airfloor" },
+            { "id": "c6", "name": "ALERT_EMAIL", "type": "string", "value": "yash@dropcap.design" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1000000-0000-4000-8000-000000000002",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [-340, 0]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.SITE + '/cityprofiles.json' }}",
+        "options": {}
+      },
+      "id": "a1000000-0000-4000-8000-000000000003",
+      "name": "Fetch live profiles",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-120, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\nconst m = new Date().getMonth() + 1;\nconst season = (m === 12 || m <= 2) ? 'winter' : (m <= 5) ? 'summer' : (m <= 9) ? 'monsoon' : 'postmonsoon';\nconst originalStr = JSON.stringify(data);\nconst prompt = `You maintain the city air profiles for AirFloor (airfloor.netlify.app), a free air-health tool for India.\\n\\nBelow is the current cityprofiles JSON: 50 Indian cities, each with name {en,te,kn} and p {en,te,kn}, where each language has the fields general, winter, summer, monsoon, postmonsoon.\\n\\nTASK: lightly refresh ONLY the \\\"general\\\" and \\\"${season}\\\" fields in all three languages for every city. Improve naturalness and freshness of wording while keeping every fact and the meaning identical. Telugu and Kannada must read like a knowledgeable local wrote them, never like a translation. Leave ids, lat, lon, names, and every other season field byte-identical. Never use an em-dash, section symbol, emoji, or bullet dot; use \\\"|\\\" or commas. Each field stays one sentence of about 15 to 25 words.\\n\\nReturn ONLY the complete JSON document with the exact same structure and the key \\\"cities\\\".\\n\\nJSON:\\n${originalStr}`;\nreturn [{ json: { prompt, season, originalStr } }];"
+      },
+      "id": "a1000000-0000-4000-8000-000000000004",
+      "name": "Build prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [100, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: 'gpt-4o-mini', temperature: 0.4, response_format: { type: 'json_object' }, messages: [ { role: 'system', content: 'You edit a JSON document of Indian city air profiles. Return ONLY valid JSON with exactly the same structure and keys as the input.' }, { role: 'user', content: $json.prompt } ] }) }}",
+        "options": { "timeout": 600000 }
+      },
+      "id": "a1000000-0000-4000-8000-000000000005",
+      "name": "LLM refresh",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [320, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst resp = $input.first().json;\nconst season = $('Build prompt').first().json.season;\nconst original = JSON.parse($('Build prompt').first().json.originalStr);\nconst content = resp.choices && resp.choices[0] && resp.choices[0].message && resp.choices[0].message.content;\nif (!content) throw new Error('LLM returned no content');\nlet fresh;\ntry { fresh = JSON.parse(content); } catch (e) { throw new Error('LLM output is not valid JSON: ' + e.message); }\nconst cities = fresh.cities;\nif (!Array.isArray(cities) || cities.length !== original.cities.length) throw new Error('City count changed: ' + (cities ? cities.length : 'none'));\nconst SEASONS = ['general','winter','summer','monsoon','postmonsoon'];\nconst LANGS = ['en','te','kn'];\nconst banned = /[\\u2014\\u00b7\\u2022\\u00a7]|[\\u{1F000}-\\u{1FAFF}]/u;\nlet changed = 0; const samples = [];\nfor (let i = 0; i < original.cities.length; i++) {\n  const o = original.cities[i]; const f = cities[i];\n  if (!f || f.id !== o.id) throw new Error('City id mismatch at index ' + i);\n  f.lat = o.lat; f.lon = o.lon; f.name = o.name;\n  for (const L of LANGS) {\n    if (!f.p || !f.p[L]) throw new Error('Missing lang ' + L + ' for ' + o.id);\n    for (const S of SEASONS) {\n      const isRefreshable = (S === 'general' || S === season);\n      if (!isRefreshable) { f.p[L][S] = o.p[L][S]; continue; }\n      const t = f.p[L][S];\n      if (typeof t !== 'string' || t.trim().length < 20) throw new Error('Bad text ' + o.id + '.' + L + '.' + S);\n      if (banned.test(t)) throw new Error('Banned character in ' + o.id + '.' + L + '.' + S);\n      if (t !== o.p[L][S]) { changed++; if (samples.length < 5) samples.push(o.id + '.' + L + '.' + S + ': ' + t.slice(0, 90)); }\n    }\n  }\n}\nfresh.updated = new Date().toISOString().slice(0, 10);\nconst newStr = JSON.stringify(fresh);\nconst sha1 = crypto.createHash('sha1').update(newStr).digest('hex');\nreturn [{ json: { newStr, sha1, changed, season, samples } }];"
+      },
+      "id": "a1000000-0000-4000-8000-000000000006",
+      "name": "Validate",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [540, 0]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "typeValidation": "strict", "version": 2 },
+          "conditions": [
+            {
+              "id": "d1",
+              "leftValue": "={{ $('Config').first().json.DRY_RUN }}",
+              "rightValue": true,
+              "operator": { "type": "boolean", "operation": "true", "singleValue": true }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "a1000000-0000-4000-8000-000000000007",
+      "name": "Dry run?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [760, 0]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $('Config').first().json.ALERT_EMAIL }}",
+        "toEmail": "={{ $('Config').first().json.ALERT_EMAIL }}",
+        "subject": "=AirFloor content refresh | REVIEW ({{ $json.season }}) | {{ $json.changed }} fields changed",
+        "emailFormat": "text",
+        "text": "=Dry run only, nothing was published.\n\nSeason refreshed: {{ $json.season }}\nFields changed: {{ $json.changed }}\n\nSamples:\n{{ $json.samples.join('\\n') }}\n\nTo publish next month automatically, open the workflow and set DRY_RUN to false in the Config node. To publish this run, re-execute the workflow after flipping DRY_RUN.",
+        "options": {}
+      },
+      "id": "a1000000-0000-4000-8000-000000000008",
+      "name": "Email review",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [980, -120]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "edit",
+        "owner": { "__rl": true, "value": "={{ $('Config').first().json.REPO_OWNER }}", "mode": "name" },
+        "repository": { "__rl": true, "value": "={{ $('Config').first().json.REPO }}", "mode": "name" },
+        "filePath": "cityprofiles.json",
+        "fileContent": "={{ $json.newStr }}",
+        "commitMessage": "=Refresh city profiles for {{ $json.season }}"
+      },
+      "id": "a1000000-0000-4000-8000-000000000009",
+      "name": "GitHub commit",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1,
+      "position": [980, 120]
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://api.netlify.com/api/v1/sites/' + $('Config').first().json.NETLIFY_SITE_ID + '/files' }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "netlifyApi",
+        "options": {}
+      },
+      "id": "a1000000-0000-4000-8000-000000000010",
+      "name": "Netlify file digest",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1200, 120]
+    },
+    {
+      "parameters": {
+        "jsCode": "const files = $input.all().map(i => i.json);\nconst digest = {};\nfor (const f of files) { if (f.path && f.sha) digest[f.path] = f.sha; }\nconst v = $('Validate').first().json;\ndigest['/cityprofiles.json'] = v.sha1;\nreturn [{ json: { digest, newStr: v.newStr, season: v.season, changed: v.changed } }];"
+      },
+      "id": "a1000000-0000-4000-8000-000000000011",
+      "name": "Build deploy digest",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1420, 120]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'https://api.netlify.com/api/v1/sites/' + $('Config').first().json.NETLIFY_SITE_ID + '/deploys' }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "netlifyApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ files: $json.digest }) }}",
+        "options": {}
+      },
+      "id": "a1000000-0000-4000-8000-000000000012",
+      "name": "Create deploy",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1640, 120]
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "={{ 'https://api.netlify.com/api/v1/deploys/' + $json.id + '/files/cityprofiles.json' }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "netlifyApi",
+        "sendBody": true,
+        "specifyBody": "string",
+        "body": "={{ $('Build deploy digest').first().json.newStr }}",
+        "options": { "headers": { "parameters": [ { "name": "Content-Type", "value": "application/octet-stream" } ] } }
+      },
+      "id": "a1000000-0000-4000-8000-000000000013",
+      "name": "Upload changed file",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1860, 120]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $('Config').first().json.ALERT_EMAIL }}",
+        "toEmail": "={{ $('Config').first().json.ALERT_EMAIL }}",
+        "subject": "=AirFloor content refresh | PUBLISHED ({{ $('Build deploy digest').first().json.season }}) | {{ $('Build deploy digest').first().json.changed }} fields",
+        "emailFormat": "text",
+        "text": "=City profiles were refreshed, committed to GitHub, and deployed to Netlify.\n\nSeason: {{ $('Build deploy digest').first().json.season }}\nFields changed: {{ $('Build deploy digest').first().json.changed }}\nLive: https://airfloor.netlify.app/cityprofiles.json",
+        "options": {}
+      },
+      "id": "a1000000-0000-4000-8000-000000000014",
+      "name": "Email published",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [2080, 120]
+    }
+  ],
+  "connections": {
+    "Monthly 06:00 on the 1st": { "main": [ [ { "node": "Config", "type": "main", "index": 0 } ] ] },
+    "Config": { "main": [ [ { "node": "Fetch live profiles", "type": "main", "index": 0 } ] ] },
+    "Fetch live profiles": { "main": [ [ { "node": "Build prompt", "type": "main", "index": 0 } ] ] },
+    "Build prompt": { "main": [ [ { "node": "LLM refresh", "type": "main", "index": 0 } ] ] },
+    "LLM refresh": { "main": [ [ { "node": "Validate", "type": "main", "index": 0 } ] ] },
+    "Validate": { "main": [ [ { "node": "Dry run?", "type": "main", "index": 0 } ] ] },
+    "Dry run?": { "main": [ [ { "node": "Email review", "type": "main", "index": 0 } ], [ { "node": "GitHub commit", "type": "main", "index": 0 } ] ] },
+    "GitHub commit": { "main": [ [ { "node": "Netlify file digest", "type": "main", "index": 0 } ] ] },
+    "Netlify file digest": { "main": [ [ { "node": "Build deploy digest", "type": "main", "index": 0 } ] ] },
+    "Build deploy digest": { "main": [ [ { "node": "Create deploy", "type": "main", "index": 0 } ] ] },
+    "Create deploy": { "main": [ [ { "node": "Upload changed file", "type": "main", "index": 0 } ] ] },
+    "Upload changed file": { "main": [ [ { "node": "Email published", "type": "main", "index": 0 } ] ] }
+  },
+  "settings": { "executionOrder": "v1" }
+}
