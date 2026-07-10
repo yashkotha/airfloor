@@ -302,6 +302,25 @@
   .p-good{background:color-mix(in srgb,var(--good) 20%,transparent);color:var(--good);}
   .p-mod{background:color-mix(in srgb,var(--warn) 22%,transparent);color:var(--warn);}
   .p-bad{background:color-mix(in srgb,var(--crit) 22%,transparent);color:var(--crit);}
+  /* pollutant card severity accent (aqi.in-style, subtle) */
+  .dcard{position:relative;}
+  .dcard-accent{position:absolute;left:0;top:15px;bottom:15px;width:3px;border-radius:0 4px 4px 0;}
+  .acc-good{background:var(--good);} .acc-mod{background:var(--warn);} .acc-bad{background:var(--crit);}
+  .dcard.has-accent{padding-left:22px;}
+  /* AQI severity scale (hero) */
+  .aqiscale{border-radius:20px;padding:22px 24px;margin-top:8px;}
+  .aqs-top{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px;}
+  .aqs-numwrap{display:flex;align-items:baseline;gap:9px;}
+  .aqs-num{font-size:44px;font-weight:800;line-height:1;letter-spacing:-.02em;color:var(--ink);}
+  .aqs-unit{font-size:12.5px;font-weight:700;letter-spacing:.04em;color:var(--ink-faint);text-transform:uppercase;}
+  .aqs-status{display:flex;align-items:baseline;gap:8px;font-size:15px;}
+  .aqs-is{color:var(--ink-soft);}
+  .aqs-cat{font-weight:800;font-size:17px;letter-spacing:-.01em;}
+  .aqs-scale{position:relative;display:flex;gap:3px;height:12px;}
+  .aqs-seg{flex:1;border-radius:3px;opacity:.9;}
+  .aqs-marker{position:absolute;top:-6px;bottom:-6px;width:4px;border-radius:4px;background:#1b1830;left:0;transform:translateX(-50%);transition:left .5s cubic-bezier(.4,0,.2,1);box-shadow:0 0 0 3px rgba(255,255,255,.95),0 2px 8px rgba(0,0,0,.3);}
+  .aqs-ticks{display:flex;justify-content:space-between;margin-top:9px;font-size:11px;color:var(--ink-faint);font-weight:600;}
+  @media (max-width:480px){ .aqs-num{font-size:38px;} .aqs-ticks{font-size:10px;} }
   .p-live{background:var(--grad-soft);color:var(--violet-deep);border:1px solid var(--hair);}
 
   .vizcard{padding:22px;margin-top:8px;border-radius:20px;}
@@ -701,6 +720,17 @@
   <circle cx="25.5" cy="9" r="1.3" fill="var(--violet)"/>
 </svg><h2 data-i18n="s1_h2">Live air readings</h2></div>
     <p class="sec-lead" data-i18n="s1_lead">Current pollutant levels at your chosen location, straight from the Copernicus atmosphere model. Not crowd-sourced guesses.</p>
+    <div class="aqiscale glass" id="aqiScale" hidden>
+      <div class="aqs-top">
+        <div class="aqs-numwrap"><span class="aqs-num" id="aqsVal">-</span><span class="aqs-unit" data-i18n="aqs_unit">AQI (US)</span></div>
+        <div class="aqs-status"><span class="aqs-is" data-i18n="aqs_is">Air quality is</span><span class="aqs-cat" id="aqsCat"></span></div>
+      </div>
+      <div class="aqs-scale">
+        <span class="aqs-seg" style="background:#2fa96b"></span><span class="aqs-seg" style="background:#c8902c"></span><span class="aqs-seg" style="background:#dd7f3e"></span><span class="aqs-seg" style="background:#d15563"></span><span class="aqs-seg" style="background:#9b5bb0"></span><span class="aqs-seg" style="background:#8c4a54"></span>
+        <span class="aqs-marker" id="aqsMarker"></span>
+      </div>
+      <div class="aqs-ticks"><span>0</span><span>50</span><span>100</span><span>150</span><span>200</span><span>300</span><span>500+</span></div>
+    </div>
     <div class="datagrid" id="aqGrid"></div>
     <div class="callout glass" id="aqNote"><span class="lbl" data-i18n="s1_note_l">Reading the numbers</span><p data-i18n="s1_note_p">The WHO says yearly PM2.5 should stay under 5 µg/m³. Most Indian cities sit well above that, so the goal is not perfect air, it is choosing the floor that gives you the cleanest slice of what is available.</p></div>
     <div class="callout glass" id="cityNote" hidden><span class="lbl"></span><p></p></div>
