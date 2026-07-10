@@ -663,13 +663,13 @@ function makeCard(nameKey, valTxt, unit, sub, pillKey, pillClass){
 }
 function renderAQ(){
   var g=el('aqGrid'); g.textContent=''; if(!STATE.aq) return;
-  var a=STATE.aq, tm=a.time?(' | '+T('live_at')+' '+a.time.replace('T',' ')):'';
+  var a=STATE.aq, tm=a.time?(T('live_at')+' '+a.time.replace('T',' ')):'';
   var pm25=a.pm2_5, whoMult=pm25!=null?(pm25/5):null;
   var pmCatK=pm25==null?null:(pm25<=15?'cat_good':pm25<=35?'cat_mod':'cat_unh');
   var pmCatC=pm25==null?'':(pm25<=15?'p-good':pm25<=35?'p-mod':'p-bad');
   var aqiCat=catFor(a.us_aqi||0);
   var rows=[
-    ['aq_pm25', pm25, 'µg/m³', (whoMult!=null?(whoMult.toFixed(1)+' '+T('whox')):'')+tm, pmCatK, pmCatC],
+    ['aq_pm25', pm25, 'µg/m³', [whoMult!=null?(whoMult.toFixed(1)+' '+T('whox')):'', tm].filter(Boolean).join(' | '), pmCatK, pmCatC],
     ['aq_aqi', a.us_aqi, 'AQI', tm, aqiCat.k, aqiCat.c],
     ['aq_pm10', a.pm10, 'µg/m³', tm, null, null],
     ['aq_no2', a.nitrogen_dioxide, 'µg/m³', tm, null, null],
