@@ -384,6 +384,8 @@
   .adv-box{margin-top:0;}
   .adv-box p{font-size:15px;line-height:1.65;}
   .adv-disc{display:block;margin-top:10px;font-size:11px;color:var(--ink-faint);}
+  .adv-floor{margin-top:10px;padding-top:10px;border-top:1px solid var(--hair-2);font-size:14px;line-height:1.6;color:var(--violet-deep);font-weight:600;}
+  .adv-floor[hidden]{display:none;}
 
   .srcgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;justify-content:center;margin-top:8px;}
   .src{padding:18px;border-radius:16px;}
@@ -644,6 +646,7 @@
     <p class="sec-lead" data-i18n="s1_lead">Current pollutant levels at your chosen location, straight from the Copernicus atmosphere model. Not crowd-sourced guesses.</p>
     <div class="datagrid" id="aqGrid"></div>
     <div class="callout glass" id="aqNote"><span class="lbl" data-i18n="s1_note_l">Reading the numbers</span><p data-i18n="s1_note_p">The WHO says yearly PM2.5 should stay under 5 µg/m³. Most Indian cities sit well above that, so the goal is not perfect air, it is choosing the floor that gives you the cleanest slice of what is available.</p></div>
+    <div class="callout glass" id="cityNote" hidden><span class="lbl"></span><p></p></div>
   </section>
 
   <section id="elevation">
@@ -817,6 +820,7 @@
       <button type="button" class="pchip" data-p="run" aria-pressed="false" data-i18n="p_run">Runners</button>
     </div>
     <div class="callout glass adv-box" id="adviceBox"><span class="lbl" id="adviceLbl"></span><p id="adviceBody" aria-live="polite"></p>
+      <p id="adviceFloor" class="adv-floor" hidden></p>
       <span class="adv-disc" data-i18n="adv_disc">General guidance, not medical advice.</span></div>
   </section>
 
