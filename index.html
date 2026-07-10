@@ -1,0 +1,812 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="See how clean the air is on every apartment floor across India. Live air-quality scores, ranked by real elevation. Free, no signup.">
+<title>AirFloor | Which floor lets you breathe easy?</title>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="AirFloor">
+<meta property="og:url" content="https://airfloor.netlify.app/">
+<meta property="og:title" content="AirFloor | Which floor lets you breathe easy?">
+<meta property="og:description" content="See how clean the air is on every apartment floor across India. Live air-quality scores, ranked by real elevation. Free, no signup.">
+<meta property="og:image" content="https://airfloor.netlify.app/og.jpg">
+<meta property="og:image:secure_url" content="https://airfloor.netlify.app/og.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="AirFloor floor air-health index, highlighting the healthiest floors to breathe on.">
+<meta property="og:locale" content="en_IN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AirFloor | Which floor lets you breathe easy?">
+<meta name="twitter:description" content="See how clean the air is on every apartment floor across India. Live air-quality scores, ranked by real elevation. Free, no signup.">
+<meta name="twitter:image" content="https://airfloor.netlify.app/og.jpg">
+<meta name="twitter:image:alt" content="AirFloor floor air-health index for apartments across India.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="heightcontrol.css">
+<style>
+  :root{
+    --font:"Open Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    /* soft lavender-on-white (primary aesthetic, light-first) */
+    --bg-0:#f5f4fb; --bg-1:#ffffff; --bg-2:#eef0f8;
+    --ink:#1b1830; --ink-soft:#565274; --ink-faint:#8f8ba8;
+    --hair:rgba(90,70,160,.14); --hair-2:rgba(90,70,160,.08);
+    --glass:rgba(255,255,255,.72); --glass-2:rgba(246,245,251,.85); --glass-brd:rgba(120,100,190,.16);
+    --violet:#7c5ce0; --violet-2:#6d4fd6; --violet-deep:#5a3fc0; --magenta:#a24fd0;
+    --grad:linear-gradient(135deg,#a78bfa 0%,#8b6fe6 55%,#7c5ce0 100%);
+    --grad-soft:linear-gradient(135deg,rgba(167,139,250,.16),rgba(124,92,224,.07));
+    --good:#0f9d6e; --warn:#c07d1a; --crit:#d1495b; --sea:#7fa8d8; --haze:#d09a3e;
+    --shadow:0 1px 2px rgba(40,30,90,.05), 0 18px 44px -26px rgba(90,70,160,.30);
+    --glow:0 0 0 1px rgba(124,92,224,.10), 0 10px 30px -12px rgba(124,92,224,.30);
+    --maxw:1080px;
+  }
+  :root[data-theme="dark"]{
+    --bg-0:#080510; --bg-1:#0d0819; --bg-2:#130b26;
+    --ink:#f5f3fb; --ink-soft:#d4cfe4; --ink-faint:#9a93b2;
+    --hair:rgba(168,140,255,.16); --hair-2:rgba(168,140,255,.10);
+    --glass:rgba(30,20,54,.46); --glass-2:rgba(40,26,70,.34); --glass-brd:rgba(180,150,255,.20);
+    --violet:#a855f7; --violet-2:#8b5cf6; --violet-deep:#6d28d9; --magenta:#c026d3;
+    --grad:linear-gradient(135deg,#c084fc 0%,#8b5cf6 46%,#6d28d9 100%);
+    --grad-soft:linear-gradient(135deg,rgba(192,132,252,.22),rgba(109,40,217,.10));
+    --good:#34d399; --warn:#fbbf24; --crit:#fb7185; --sea:#5b7fb0; --haze:#eaa24a;
+    --shadow:0 2px 8px rgba(0,0,0,.4), 0 30px 70px -32px rgba(76,29,149,.7);
+    --glow:0 0 0 1px rgba(180,150,255,.14), 0 8px 30px -8px rgba(139,92,246,.5);
+  }
+  /* dark-theme component overrides, kept for a future toggle; light is the default look since there is no switch yet */
+  :root[data-theme="dark"] .lang{
+    background:linear-gradient(135deg,rgba(40,20,70,.6),rgba(10,7,20,.7));
+    border-color:rgba(180,150,255,.28);
+    box-shadow:0 0 0 1px rgba(168,140,255,.1), 0 10px 34px -8px rgba(139,92,246,.6), inset 0 1px 0 rgba(255,255,255,.14);
+  }
+  :root[data-theme="dark"] .lang::before{ background:linear-gradient(120deg,transparent 20%,rgba(192,132,252,.28),transparent 60%); }
+  :root[data-theme="dark"] .lang .pill{ color:#e8e2f7; }
+  :root[data-theme="dark"] .p-live{ color:#d6c4ff; }
+  :root[data-theme="dark"] .ac{ box-shadow:0 20px 50px -12px rgba(0,0,0,.7), var(--glow); }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:var(--font); color:var(--ink); font-size:16.5px; line-height:1.6;
+    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+    background:var(--bg-0); min-height:100vh; overflow-x:clip;
+  }
+  #ditherBg{position:fixed; inset:0; width:100%; height:100%; z-index:-2; opacity:.7;}
+  #bgTint{position:fixed; inset:0; z-index:-1; pointer-events:none;
+    background:radial-gradient(1000px 600px at 88% -10%, rgba(124,58,237,.10), transparent 62%);}
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 20px;}
+  h1,h2,h3{margin:0; font-weight:800; line-height:1.12; letter-spacing:-.02em; text-wrap:balance;}
+  p{margin:0; max-width:68ch;}
+  a{color:var(--violet); text-underline-offset:2px;}
+  .soft{color:var(--ink-soft);} .faint{color:var(--ink-faint);}
+  strong{font-weight:700;}
+
+  .glass{background:var(--glass); border:1px solid var(--glass-brd);
+    -webkit-backdrop-filter:blur(20px) saturate(150%); backdrop-filter:blur(20px) saturate(150%);
+    border-radius:20px; box-shadow:var(--shadow); position:relative;}
+  .glass::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+    background:linear-gradient(180deg,rgba(255,255,255,.14),transparent 40%);opacity:.6;}
+
+  /* ---------- top bar with STAR language switcher ---------- */
+  .topbar{position:sticky; top:0; z-index:40; padding:12px 0;
+    -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);}
+  .topbar-in{display:flex; justify-content:space-between; align-items:center; gap:12px;}
+  .brand{display:flex; align-items:center; gap:10px; font-weight:800; letter-spacing:-.02em; font-size:17px;}
+  .brand .dot{width:26px;height:26px;border-radius:8px;background:var(--grad);box-shadow:var(--glow);display:inline-block;position:relative;overflow:hidden;}
+  .brand .dot::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 30% 25%,rgba(255,255,255,.8),transparent 45%);}
+  .brand small{font-weight:600;color:var(--ink-faint);font-size:12px;letter-spacing:.02em;}
+
+  .lang{position:relative; display:inline-flex; align-items:center; gap:4px; padding:5px;
+    border-radius:100px; background:linear-gradient(135deg,rgba(124,92,224,.12),rgba(90,63,192,.08));
+    border:1px solid var(--glass-brd);
+    -webkit-backdrop-filter:blur(16px) saturate(160%); backdrop-filter:blur(16px) saturate(160%);
+    box-shadow:0 0 0 1px rgba(124,92,224,.06), 0 8px 22px -10px rgba(124,92,224,.22), inset 0 1px 0 rgba(255,255,255,.7);
+    overflow:hidden;}
+  .lang::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+    background:linear-gradient(120deg,transparent 20%,rgba(167,139,250,.16),transparent 60%);
+    background-size:220% 100%; animation:shimmer 5.5s linear infinite;}
+  @keyframes shimmer{to{background-position:220% 0;}}
+  .lang .pill{position:relative; z-index:1; border:0; cursor:pointer; font-family:var(--font);
+    font-weight:700; font-size:13.5px; letter-spacing:.01em; color:var(--ink-soft); background:transparent;
+    padding:9px 15px; border-radius:100px; transition:color .2s, transform .2s;}
+  .lang .pill:hover{transform:translateY(-1px);}
+  .lang .glider{position:absolute; z-index:0; top:5px; bottom:5px; border-radius:100px;
+    background:var(--grad); box-shadow:0 4px 16px -2px rgba(139,92,246,.8), inset 0 1px 0 rgba(255,255,255,.4);
+    transition:left .34s cubic-bezier(.5,1.4,.4,1), width .34s cubic-bezier(.5,1.4,.4,1); left:5px; width:80px;}
+  .lang .pill.active{color:#fff;}
+  .lang .pill:focus-visible{outline:2px solid #fff; outline-offset:2px;}
+  .lang .globe{margin-right:6px;font-size:13px;opacity:.9;}
+
+  /* ---------- hero ---------- */
+  .hero{padding:64px 0 34px; position:relative;}
+  .hero::before{content:""; position:absolute; inset:-40px -80px -10px -80px; z-index:-1; pointer-events:none;
+    background:linear-gradient(103deg, var(--bg-0) 30%, color-mix(in srgb,var(--bg-0) 78%, transparent) 58%, color-mix(in srgb,var(--bg-0) 30%, transparent) 82%);}
+  .hero-copy{max-width:760px;margin:0 auto;text-align:center;}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:12.5px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--violet-deep);padding:6px 13px;border-radius:100px;
+    background:var(--grad-soft);border:1px solid var(--hair);margin-bottom:18px;}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(52,211,153,.6);}70%{box-shadow:0 0 0 7px rgba(52,211,153,0);}100%{box-shadow:0 0 0 0 rgba(52,211,153,0);}}
+  h1{font-size:clamp(30px,5.6vw,52px);}
+  h1 .gr{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .dek{margin:16px auto 0;font-size:clamp(16px,2.1vw,19px);color:var(--ink-soft);max-width:60ch;}
+
+  /* ---------- location search (hybrid combobox) ---------- */
+  .searchwrap{margin:26px auto 0;max-width:720px;padding:18px;border-radius:22px;position:relative;z-index:30;}
+  .searchwrap:has(.combo.open){z-index:50;}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;}
+  .combo{position:relative;width:100%;}
+  /* ---------- animated gradient stroke (premium highlight, all sides) ---------- */
+  @property --gs-ang{ syntax:"<angle>"; inherits:false; initial-value:0deg; }
+  @keyframes gsSpin{ to{ --gs-ang:360deg; } }
+  .gstroke{ position:relative; }
+  .gstroke::after{ content:""; position:absolute; inset:0; border-radius:inherit; padding:1.5px; pointer-events:none; z-index:3;
+    background:conic-gradient(from var(--gs-ang), var(--violet), #c4b5fd, var(--magenta), #a78bfa, var(--violet-2), var(--violet));
+    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor; mask-composite:exclude; animation:gsSpin 4.5s linear infinite; }
+  @media (prefers-reduced-motion:reduce){ .gstroke::after{ animation:none; } }
+
+  .searchfield{position:relative;display:flex;align-items:center;width:100%;}
+  .searchfield .ic{position:absolute;left:15px;font-size:16px;opacity:.75;pointer-events:none;z-index:1;}
+  .searchfield .ic-spin{color:var(--violet);opacity:1;}
+  .searchfield input{width:100%;font-family:var(--font);font-size:16px;color:var(--ink);
+    padding:15px 90px 15px 42px;border-radius:14px;border:1px solid var(--glass-brd);
+    background:var(--glass-2);outline:none;transition:border-color .2s, box-shadow .2s;}
+  .searchfield input::placeholder{color:var(--ink-faint);}
+  .searchfield input:focus{border-color:var(--violet);box-shadow:0 0 0 3px rgba(139,92,246,.28);}
+  .combo.open .searchfield input{border-color:transparent;box-shadow:none;}
+  .combo.open .searchfield::after{content:"";position:absolute;inset:0;border-radius:14px;padding:1.5px;pointer-events:none;z-index:2;
+    background:conic-gradient(from var(--gs-ang), var(--violet), #c4b5fd, var(--magenta), #a78bfa, var(--violet-2), var(--violet));
+    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor; mask-composite:exclude; animation:gsSpin 4.5s linear infinite;}
+  @media (prefers-reduced-motion:reduce){ .combo.open .searchfield::after{ animation:none; } }
+  .caret{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:34px;height:34px;
+    display:flex;align-items:center;justify-content:center;border:0;cursor:pointer;border-radius:9px;
+    background:transparent;color:var(--ink-soft);transition:background .18s, color .18s;}
+  .caret::before{content:"";position:absolute;inset:-7px;border-radius:12px;}
+  .caret:hover{background:var(--glass-2);color:var(--ink);}
+  .caret svg{width:16px;height:16px;transition:transform .28s cubic-bezier(.4,1.3,.5,1);}
+  .combo.open .caret svg{transform:rotate(180deg);}
+  .caret:focus-visible{outline:2px solid var(--violet);outline-offset:2px;}
+  .clearbtn{position:absolute;right:46px;top:50%;transform:translateY(-50%);width:30px;height:30px;
+    display:flex;align-items:center;justify-content:center;border:0;cursor:pointer;border-radius:9px;
+    background:transparent;color:var(--ink-faint);transition:background .18s, color .18s;}
+  .clearbtn::before{content:"";position:absolute;inset:-9px;border-radius:12px;}
+  .clearbtn:hover{background:var(--glass-2);color:var(--ink);}
+  .clearbtn:focus-visible{outline:2px solid var(--violet);outline-offset:2px;}
+  .clearbtn svg{width:14px;height:14px;}
+  .clearbtn[hidden]{display:none;}
+  .ac{position:absolute;left:0;right:0;top:calc(100% + 8px);z-index:60;margin:0;padding:6px;list-style:none;text-align:left;
+    max-height:min(60vh,420px);overflow-y:auto;-webkit-overflow-scrolling:touch;border-radius:14px;
+    background:var(--bg-1);border:1px solid var(--glass-brd);
+    box-shadow:0 20px 46px -16px rgba(50,35,100,.18), var(--glow);
+    opacity:0;transform:translateY(-6px) scale(.99);transform-origin:top center;pointer-events:none;
+    transition:opacity .16s ease, transform .16s ease;}
+  .combo.open .ac{opacity:1;transform:none;pointer-events:auto;}
+  .ac::before{content:"";position:absolute;left:10px;right:10px;top:0;height:1px;pointer-events:none;
+    background:linear-gradient(90deg,transparent,var(--glass-brd),transparent);}
+  .ac.loading .opt, .ac.loading .empty{opacity:.5;}
+  .ac .ghdr{display:flex;align-items:center;justify-content:space-between;gap:8px;
+    font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;padding:10px 12px 6px;}
+  .ac .ghdr-clear{position:relative;border:0;background:transparent;color:var(--violet);font-size:11px;font-weight:700;
+    text-transform:none;letter-spacing:0;cursor:pointer;padding:4px 6px;border-radius:6px;}
+  .ac .ghdr-clear::before{content:"";position:absolute;inset:-8px;}
+  .ac .ghdr-clear:hover{background:var(--grad-soft);}
+  .ac .ghdr-clear:focus-visible{outline:2px solid var(--violet);outline-offset:2px;}
+  .ac .opt{position:relative;display:flex;align-items:flex-start;gap:12px;padding:12px;border-radius:11px;cursor:pointer;min-height:52px;}
+  .ac .opt-ic{flex:0 0 auto;width:20px;height:20px;margin-top:2px;display:flex;align-items:center;justify-content:center;color:var(--ink-faint);}
+  .ac .opt.act .opt-ic{color:var(--violet);}
+  .ac .opt-body{flex:1;min-width:0;}
+  .ac .opt .nm{font-weight:700;font-size:14.5px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .ac .opt .nm .mtch{font-weight:800;color:var(--ink);}
+  .ac .opt .sec{font-size:12.5px;color:var(--ink-faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;}
+  .ac .opt .meta{flex:0 0 auto;font-size:12px;color:var(--ink-faint);text-align:right;padding-left:4px;white-space:nowrap;}
+  .ac .opt:hover{background:var(--grad-soft);}
+  .ac .opt.active{background:var(--grad-soft);}
+  .ac .opt.active::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.5px;pointer-events:none;
+    background:conic-gradient(from var(--gs-ang), var(--violet), #c4b5fd, var(--magenta), #a78bfa, var(--violet-2), var(--violet));
+    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor; mask-composite:exclude; animation:gsSpin 4.5s linear infinite;}
+  @media (prefers-reduced-motion:reduce){ .ac .opt.active::before{ animation:none; } }
+  .ac .empty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:5px;padding:28px 16px;cursor:default;}
+  .ac .empty .empty-ic{color:var(--ink-faint);opacity:.7;margin-bottom:3px;}
+  .ac .empty .empty-t{font-size:13.5px;font-weight:700;color:var(--ink-soft);}
+  .ac .empty .empty-h{font-size:12px;color:var(--ink-faint);}
+  .ac .msg{padding:12px;font-size:13px;color:var(--ink-faint);cursor:default;}
+  .ac .msg.err{color:var(--crit);}
+  .ac .ac-foot{padding:10px 12px 6px;margin-top:2px;border-top:1px solid var(--hair);cursor:default;}
+  .ac .kbdrow{display:none;align-items:center;flex-wrap:wrap;gap:2px;font-size:11px;color:var(--ink-faint);margin-bottom:6px;}
+  @media (hover:hover) and (pointer:fine){ .ac .kbdrow{display:flex;} }
+  .ac .kbdrow kbd{font-family:inherit;font-size:10.5px;font-weight:700;color:var(--ink-soft);background:var(--glass-2);
+    border:1px solid var(--glass-brd);border-radius:5px;padding:1px 6px;margin:0 2px;}
+  .ac .attrib{font-size:10.5px;color:var(--ink-faint);}
+  .spin{animation:acspin .85s linear infinite;transform-box:fill-box;transform-origin:center;}
+  @keyframes acspin{to{transform:rotate(360deg);}}
+  .hintrow{margin-top:11px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:12.5px;color:var(--ink-faint);}
+  .status{font-size:13px;color:var(--ink-faint);padding:8px 2px 0;min-height:8px;}
+  .status.err{color:var(--crit);}
+
+  /* ---------- two primary steps ---------- */
+  .steps{display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:920px;margin:34px auto 0;align-items:stretch;position:relative;z-index:30;}
+  .steps:has(.combo.open){z-index:50;}
+  .step{padding:26px 24px 24px;border-radius:20px;position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;}
+  .step-head{display:flex;align-items:center;justify-content:center;gap:11px;margin-bottom:20px;}
+  .step-no{flex:none;width:30px;height:30px;border-radius:50%;background:var(--grad);color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;box-shadow:0 5px 14px -4px rgba(124,92,224,.7);}
+  .step-title{font-size:16.5px;font-weight:800;letter-spacing:-.01em;}
+  .step-hint{font-size:12px;color:var(--ink-faint);margin-top:12px;line-height:1.45;text-align:center;max-width:34ch;}
+  .floors-big{display:flex;align-items:baseline;gap:11px;justify-content:center;margin:6px 0 0;padding:6px 0;}
+  .floors-input{width:132px;font:inherit;font-weight:800;font-size:52px;letter-spacing:-.03em;color:var(--ink);background:var(--glass-2);
+    border:2px solid var(--glass-brd);border-radius:18px;padding:10px 8px;outline:none;text-align:center;line-height:1;
+    transition:border-color .2s, box-shadow .2s;-moz-appearance:textfield;}
+  .floors-input::-webkit-outer-spin-button,.floors-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+  .floors-input::placeholder{color:var(--ink-faint);opacity:.55;font-size:16px;font-weight:600;letter-spacing:0;}
+  .floors-input:focus{border-color:var(--violet);box-shadow:0 0 0 5px rgba(124,92,224,.22);}
+  .floors-input:placeholder-shown{border-color:var(--violet);}
+  @media (prefers-reduced-motion:no-preference){ .floors-input:placeholder-shown{animation:floorsGlow 2.4s ease-in-out infinite;} }
+  @keyframes floorsGlow{0%,100%{box-shadow:0 0 0 3px rgba(124,92,224,.14);}50%{box-shadow:0 0 0 8px rgba(124,92,224,.30);}}
+  .floors-suffix{font-size:19px;font-weight:700;color:var(--ink-soft);}
+  #step2 .step-hint{text-align:center;}
+
+  /* ---------- selected place summary ---------- */
+  .place{margin:18px auto 0;max-width:920px;padding:18px 26px;border-radius:18px;display:flex;flex-wrap:wrap;gap:14px 30px;align-items:flex-start;justify-content:space-between;}
+  .place-main{min-width:0;}
+  .place .pnm{font-size:20px;font-weight:800;}
+  .place .padr{font-size:13px;color:var(--ink-soft);margin-top:3px;}
+  .place .prov{margin-top:5px;font-size:11px;color:var(--ink-faint);}
+  .place-stats{display:flex;gap:30px;flex-wrap:wrap;}
+  .place .stat{text-align:right;}
+  .place .stat .lab{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;}
+  .place .stat .val{font-size:27px;font-weight:800;line-height:1.1;margin-top:2px;}
+  .place .stat .val small{font-size:13px;color:var(--ink-faint);font-weight:600;}
+  #exportBtn{display:none;align-items:center;gap:8px;align-self:center;
+    font-family:var(--font);font-weight:700;font-size:13.5px;color:#fff;
+    background:var(--grad);border:0;cursor:pointer;border-radius:100px;
+    padding:11px 20px;box-shadow:var(--glow);white-space:nowrap;
+    transition:transform .18s ease, box-shadow .18s ease;}
+  #exportBtn svg{flex:none;}
+  #exportBtn:hover{transform:translateY(-2px);box-shadow:0 14px 30px -10px rgba(124,92,224,.45), var(--glow);}
+  #exportBtn:focus-visible{outline:2px solid var(--violet);outline-offset:3px;}
+  #exportBtn:disabled{opacity:.72;cursor:default;transform:none;}
+  body:not(.no-location):not(.no-floors) #exportBtn{display:inline-flex;}
+
+  /* ---------- compact gate hint ---------- */
+  .gate-hint{display:none;max-width:600px;margin:26px auto 0;padding:13px 22px;border-radius:100px;text-align:center;
+    font-size:14px;font-weight:600;color:var(--violet-deep);background:var(--grad-soft);border:1px solid var(--hair);}
+  body.no-location .gate-hint, body.no-floors .gate-hint{display:block;}
+  body.no-location #place,
+  body.no-location #data, body.no-location #elevation, body.no-location #index,
+  body.no-location #tiers, body.no-location #method, body.no-location #findings, body.no-location #sources{display:none;}
+  body.no-floors #elevation, body.no-floors #index, body.no-floors #tiers,
+  body.no-floors #method, body.no-floors #findings{display:none;}
+
+  section{padding:56px 0;}
+  .sec-h{display:flex;align-items:baseline;justify-content:center;gap:12px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--hair);}
+  .sec-h .n{font-weight:800;color:var(--violet);font-size:14px;}
+  .sec-h h2{font-size:clamp(20px,3vw,26px);}
+  .sec-lead{color:var(--ink-soft);margin:0 auto 24px;max-width:62ch;text-align:center;}
+
+  .datagrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:8px;}
+  @media (max-width:640px){ .datagrid{grid-template-columns:repeat(2,minmax(0,1fr));} }
+  .dcard{padding:22px 18px;border-radius:16px;text-align:left;}
+  .dcard .k{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;}
+  .dcard .v{font-size:27px;font-weight:800;margin-top:7px;line-height:1.05;}
+  .dcard .v small{font-size:12.5px;color:var(--ink-faint);font-weight:600;}
+  .dcard .sub{font-size:11.5px;color:var(--ink-soft);margin-top:7px;line-height:1.4;}
+  .pill-i{display:inline-block;font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:100px;margin-top:10px;}
+  .p-good{background:color-mix(in srgb,var(--good) 20%,transparent);color:var(--good);}
+  .p-mod{background:color-mix(in srgb,var(--warn) 22%,transparent);color:var(--warn);}
+  .p-bad{background:color-mix(in srgb,var(--crit) 22%,transparent);color:var(--crit);}
+  .p-live{background:var(--grad-soft);color:var(--violet-deep);border:1px solid var(--hair);}
+
+  .vizcard{padding:22px;margin-top:8px;border-radius:20px;}
+  .viz-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:6px;}
+  .viz-h h3{font-size:16px;font-weight:700;}
+  .viz-h .hint{font-size:11.5px;color:var(--ink-faint);font-weight:600;}
+  canvas.chart{display:block;width:100%;height:auto;border-radius:12px;}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;font-size:12px;color:var(--ink-soft);font-weight:600;}
+  .legend .li{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;}
+  .sw{width:14px;height:3px;border-radius:2px;display:inline-block;}
+  .dt{width:9px;height:9px;border-radius:50%;display:inline-block;}
+
+  .viewtabs{display:flex;justify-content:center;gap:4px;margin:22px auto 20px;padding:4px;max-width:max-content;
+    background:var(--glass-2);border:1px solid var(--glass-brd);border-radius:100px;box-shadow:var(--shadow);}
+  .vtab{border:0;background:transparent;cursor:pointer;font-family:var(--font);font-weight:700;font-size:13.5px;
+    color:var(--ink-soft);padding:9px 20px;border-radius:100px;transition:background .22s ease, color .22s ease, box-shadow .22s ease;}
+  .vtab:hover{color:var(--ink);}
+  .vtab[aria-selected="true"]{background:var(--grad);color:#fff;box-shadow:var(--glow);}
+  .vtab:focus-visible{outline:2px solid var(--violet);outline-offset:2px;}
+  .viewpanel[hidden]{display:none;}
+
+  .peakbox{display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:18px;padding:18px 20px;border-radius:16px;
+    background:color-mix(in srgb,var(--good) 12%,var(--glass));border:1px solid color-mix(in srgb,var(--good) 30%,var(--hair));}
+  .peakbox .big{font-size:36px;font-weight:800;color:var(--good);line-height:1;}
+  .peakbox .tx{font-size:14px;color:var(--ink-soft);flex:1;min-width:240px;}
+  .peakbox .tx b{color:var(--ink);}
+
+  .tablecard{overflow:hidden;margin-top:8px;border-radius:18px;}
+  .tscroll{overflow-x:auto;}
+  table{border-collapse:collapse;width:100%;min-width:600px;font-size:14px;}
+  /* mobile tables: pin the label column so context survives horizontal scroll */
+  .tscroll th:first-child{position:sticky;left:0;z-index:2;background:var(--bg-1);}
+  .tscroll thead th:first-child{z-index:3;}
+  .tscroll th:first-child::after{content:"";position:absolute;top:0;right:0;bottom:0;width:1px;background:var(--hair);}
+  .tablecard{position:relative;}
+  .tablecard::after{content:"";position:absolute;top:0;right:0;bottom:0;width:26px;border-radius:0 18px 18px 0;pointer-events:none;
+    background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--bg-1) 85%,transparent));opacity:0;}
+  @media (max-width:640px){
+    .tablecard::after{opacity:1;}
+    table{min-width:560px;font-size:13px;}
+    .bar{min-width:64px;}
+    thead th{padding:10px 10px;}
+    tbody th{padding:10px 10px;}
+  }
+  thead th{background:var(--glass-2);text-align:left;padding:12px 14px;font-size:11px;letter-spacing:.04em;
+    text-transform:uppercase;color:var(--ink-soft);font-weight:700;border-bottom:1px solid var(--hair);}
+  tbody td{padding:12px 14px;border-bottom:1px solid var(--hair-2);}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody th{padding:12px 14px;border-bottom:1px solid var(--hair-2);text-align:left;font-weight:700;background:var(--glass-2);white-space:nowrap;font-size:13.5px;text-transform:capitalize;}
+  .bar{height:8px;border-radius:100px;background:var(--hair);position:relative;overflow:hidden;min-width:90px;}
+  .bar>i{position:absolute;left:0;top:0;bottom:0;border-radius:100px;}
+  .scoren{font-weight:800;font-size:14px;}
+  .ov-cell{display:flex;flex-direction:column;align-items:center;gap:4px;}
+  .ov-cell .bar{min-width:64px;}
+
+  .method{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;justify-content:center;margin-top:8px;}
+  .mrow{padding:20px 18px;border-radius:16px;text-align:left;}
+  .mrow .w{font-size:24px;font-weight:800;color:var(--violet);}
+  .mrow .n{font-weight:700;font-size:14px;margin:5px 0 6px;}
+  .mrow .d{font-size:12.5px;color:var(--ink-soft);line-height:1.5;}
+
+  .callout{padding:20px 22px;margin:22px auto;max-width:760px;border-radius:16px;text-align:left;}
+  .callout .lbl{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--violet);font-weight:800;display:block;margin-bottom:6px;}
+  .callout p{font-size:14px;margin:0;max-width:none;line-height:1.6;}
+
+  .findings{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:8px;align-items:stretch;}
+  .fcard{padding:20px 22px 22px;border-radius:16px;position:relative;overflow:hidden;text-align:left;}
+  .fcard .ftag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--violet-deep);margin-bottom:9px;}
+  .fcard.good .ftag{color:var(--good);}
+  .fcard.warn .ftag{color:var(--warn);}
+  .fcard h3{font-size:16.5px;margin-bottom:7px;text-align:left;line-height:1.28;}
+  .fcard p{font-size:14px;max-width:none;margin:0;text-align:left;line-height:1.6;color:var(--ink-soft);}
+  @media (max-width:820px){ .findings{grid-template-columns:1fr;} }
+
+  .srcgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;justify-content:center;margin-top:8px;}
+  .src{padding:18px;border-radius:16px;}
+  .src .st{font-weight:700;font-size:14px;display:flex;align-items:center;gap:8px;}
+  .src .sv{font-size:12.5px;color:var(--ink-soft);margin-top:5px;line-height:1.5;overflow-wrap:anywhere;word-break:break-word;}
+  .src .verified{font-size:10.5px;font-weight:700;color:var(--good);background:color-mix(in srgb,var(--good) 16%,transparent);padding:2px 8px;border-radius:100px;}
+
+  footer{margin-top:32px;padding:22px 0 60px;border-top:1px solid var(--hair);}
+  footer p{font-size:12px;color:var(--ink-faint);line-height:1.75;max-width:none;}
+  .foot-oss{margin-top:12px;font-weight:600;color:var(--ink-soft);}
+  .foot-oss a{color:var(--violet);font-weight:700;text-decoration:none;}
+  .foot-oss a:hover{text-decoration:underline;}
+
+  /* ---------- chart actions: scrub tooltip + selected-floor readout ---------- */
+  #chartTip{position:fixed;z-index:80;pointer-events:none;opacity:0;transform:translateY(2px);transition:opacity .12s ease;
+    background:var(--bg-1);border:1px solid var(--glass-brd);border-radius:12px;padding:9px 13px;
+    box-shadow:0 14px 32px -12px rgba(50,35,100,.34), var(--glow);min-width:92px;}
+  #chartTip.show{opacity:1;transform:none;}
+  #chartTip .ct-f{font-weight:800;font-size:12.5px;color:var(--ink-soft);letter-spacing:.01em;}
+  #chartTip .ct-s{font-weight:800;font-size:17px;color:var(--violet-deep);line-height:1.1;margin-top:1px;}
+  #chartTip .ct-b{margin-top:6px;font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--good);}
+  #floorReport{margin-top:14px;padding:16px 18px;border-radius:16px;background:var(--glass-2);border:1px solid var(--glass-brd);box-shadow:var(--shadow);}
+  #floorReport[hidden]{display:none;}
+  .fr-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+  .fr-head .fr-f{font-weight:800;font-size:16.5px;color:var(--ink);}
+  .fr-head .fr-o{font-weight:800;font-size:16.5px;color:var(--violet-deep);}
+  .fr-head .fr-badge{font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--good);background:color-mix(in srgb,var(--good) 15%,transparent);padding:3px 11px;border-radius:100px;}
+  .fr-head .fr-clear{margin-left:auto;width:28px;height:28px;border-radius:50%;border:1px solid var(--glass-brd);background:var(--bg-1);color:var(--ink-soft);font-size:16px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color .2s,border-color .2s;}
+  .fr-head .fr-clear:hover{color:var(--ink);border-color:var(--violet);}
+  .fr-parts{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:13px;}
+  .fr-part{display:flex;flex-direction:column;align-items:flex-start;gap:3px;padding:10px 11px;border-radius:11px;background:var(--bg-1);border:1px solid var(--hair-2);}
+  .fr-part .fr-k{font-size:10.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--ink-faint);}
+  .fr-part .fr-v{font-size:19px;font-weight:800;color:var(--ink);line-height:1;}
+  @media (max-width:560px){ .fr-parts{grid-template-columns:repeat(3,minmax(0,1fr));} }
+
+  @media (max-width:640px){
+    body{font-size:16px;}
+    .hero{padding:36px 0 20px;}
+    .steps{grid-template-columns:1fr;gap:14px;margin-top:26px;}
+    .step{padding:22px 18px 22px;}
+    .floors-input{width:118px;font-size:44px;}
+    .floors-suffix{font-size:18px;}
+    .place{padding:16px 18px;gap:12px 20px;}
+    .place .stat{text-align:left;}
+    .lang{gap:2px;padding:4px;} .lang .pill{padding:8px 10px;font-size:12px;} .lang .globe{margin-right:4px;font-size:11px;}
+    .brand small{display:none;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .lang::before{animation:none;} .eyebrow .live{animation:none;} .spin{animation:none;}
+    html{scroll-behavior:auto;}
+  }
+
+  /* ---------- print / Export PDF ---------- */
+  .print-only{display:none;}
+  @media print{
+    @page{ margin:14mm; }
+    html,body{ background:#fff !important; color:#1b1830 !important; }
+    #ditherBg,#bgTint,.topbar,.hero-copy,.steps,#gateHint,#exportBtn,.viewtabs,.status,#acLive,.sr-only{ display:none !important; }
+    .hero{ padding:0 !important; }
+    .hero::before{ display:none !important; }
+    .wrap{ max-width:none !important; padding:0 !important; margin:0 !important; }
+    .print-only{ display:block !important; }
+    #printHead{ margin:0 0 16px; padding:0 0 10px; border-bottom:2px solid #7c5ce0; }
+    #printHead .ph-title{ font-size:22px; font-weight:800; letter-spacing:-.02em; color:#1b1830; }
+    #printHead .ph-sub{ font-size:12.5px; color:#565274; margin-top:5px; }
+    .glass,.callout,.place{ background:#fff !important; box-shadow:none !important;
+      -webkit-backdrop-filter:none !important; backdrop-filter:none !important; border:1px solid #e3e0ef !important; }
+    .glass::before{ display:none !important; }
+    .place{ margin:0 0 16px !important; padding:14px 16px !important; }
+    section{ break-inside:avoid; page-break-inside:avoid; margin:0 0 16px !important; }
+    h1,h2,h3{ color:#1b1830 !important; }
+    p,.soft,.faint,td,th,li,.lab,.val,.sec-lead{ color:#3a3556 !important; }
+    a{ color:#5a3fc0 !important; text-decoration:none; }
+    canvas{ max-width:100% !important; }
+    *{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  }
+.secic {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  vertical-align: middle;
+  overflow: visible;
+  filter: drop-shadow(0 2px 6px rgba(124, 92, 224, 0.32));
+}
+
+.secic path,
+.secic circle,
+.secic rect,
+.secic line {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes secic-drift {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(2.2px); }
+  }
+  @keyframes secic-tilt {
+    0%, 100% { transform: perspective(140px) rotateY(0deg); }
+    50% { transform: perspective(140px) rotateY(16deg); }
+  }
+  @keyframes secic-pulse {
+    0%, 100% { transform: scale(1); }
+    45% { transform: scale(1.07); }
+  }
+  @keyframes secic-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+  }
+  @keyframes secic-seesaw {
+    0%, 100% { transform: rotate(-4deg); }
+    50% { transform: rotate(4deg); }
+  }
+  @keyframes secic-glow-pulse {
+    0%, 100% {
+      filter: drop-shadow(0 2px 6px rgba(124, 92, 224, 0.32)) drop-shadow(0 0 2px rgba(124, 92, 224, 0.18));
+    }
+    50% {
+      filter: drop-shadow(0 2px 9px rgba(124, 92, 224, 0.55)) drop-shadow(0 0 10px rgba(124, 92, 224, 0.45));
+    }
+  }
+  @keyframes secic-knob-shift {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(1.6px); }
+  }
+  @keyframes secic-ring-pulse {
+    0% { transform: scale(0.82); opacity: 0.55; }
+    100% { transform: scale(1.4); opacity: 0; }
+  }
+
+  .secic-air { animation: secic-drift 4.5s ease-in-out infinite; }
+  .secic-elevation { animation: secic-tilt 5.5s ease-in-out infinite; }
+  .secic-score { animation: secic-pulse 3.2s ease-in-out infinite; }
+  .secic-tiers { animation: secic-float 4.8s ease-in-out infinite; }
+  .secic-method { animation: secic-seesaw 5s ease-in-out infinite; }
+  .secic-findings { animation: secic-glow-pulse 3.6s ease-in-out infinite; }
+  /* secic-sources carries its motion on its inner ring, see below */
+
+  .secic-method__knob-a { animation: secic-knob-shift 3.4s ease-in-out infinite; }
+  .secic-method__knob-b { animation: secic-knob-shift 3.4s ease-in-out infinite; animation-delay: 0.5s; }
+  .secic-method__knob-c { animation: secic-knob-shift 3.4s ease-in-out infinite; animation-delay: 1s; }
+
+  .secic-sources__ring { animation: secic-ring-pulse 2.8s ease-out infinite; }
+}
+  .sec-h{align-items:center;}
+</style>
+</head>
+<body>
+<canvas id="ditherBg"></canvas>
+<div id="bgTint"></div>
+
+<div class="topbar">
+  <div class="wrap topbar-in">
+    <div class="brand"><span class="dot"></span> AirFloor <small data-i18n="brand_tag">India | live index</small></div>
+    <div class="lang glass-none" role="group" aria-label="Language">
+      <span class="glider" id="glider"></span>
+      <button type="button" class="pill active" data-lang="en"><span class="globe">🌐</span>EN</button>
+      <button type="button" class="pill" data-lang="te" lang="te">తెలుగు</button>
+      <button type="button" class="pill" data-lang="kn" lang="kn">ಕನ್ನಡ</button>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div id="printHead" class="print-only" aria-hidden="true"></div>
+  <div class="hero">
+    <div class="hero-copy">
+      <span class="eyebrow"><span data-i18n="eyebrow">Live air quality, floor by floor</span></span>
+      <h1><span data-i18n="h1a">Which floor should you live on?</span> <span class="gr" data-i18n="h1b">Ask the air.</span></h1>
+      <p class="dek" data-i18n="dek">The air you breathe is not the same on every floor. AirFloor scores each floor of an apartment for how clean and healthy the air is, using live pollution data and the real ground elevation for any place in India. Find the best floors to breathe before you rent or buy.</p>
+    </div>
+
+    <div class="steps">
+      <div class="step glass" id="step1">
+        <div class="step-head"><span class="step-no">1</span><span class="step-title" data-i18n="step1_title">Pick your area</span></div>
+        <div class="combo" id="combo">
+          <div class="searchfield">
+            <span class="ic" id="fieldIcon">
+              <span class="ic-pin" aria-hidden="true">📍</span>
+              <span class="ic-spin" id="icSpin" hidden aria-hidden="true"><svg class="spin" viewBox="0 0 24 24" width="15" height="15"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="40 56"/></svg></span>
+            </span>
+            <input id="q" type="text" role="combobox" aria-expanded="false" aria-controls="acList" aria-autocomplete="list" aria-label="Search location" aria-describedby="comboHint" autocomplete="off" placeholder="Area, district, city or 6-digit PIN code" data-i18n-ph="ph_search">
+            <button type="button" class="clearbtn" id="clearBtn" aria-label="Clear search" data-i18n-aria="aria_clear" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg></button>
+            <button type="button" class="caret" id="caret" aria-label="Browse areas" data-i18n-aria="aria_caret" tabindex="-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+          </div>
+          <ul class="ac" id="acList" role="listbox" aria-label="Areas" aria-busy="false"></ul>
+        </div>
+        <div class="step-hint"><span id="comboHint" data-i18n="combo_hint">Open the list to browse popular areas, or start typing. One area at a time.</span></div>
+        <div class="status" id="status"></div>
+        <div id="acLive" role="status" aria-live="polite" class="sr-only"></div>
+      </div>
+
+      <div class="step glass" id="step2">
+        <div class="step-head"><span class="step-no">2</span><span class="step-title" data-i18n="step2_title">Building height</span></div>
+        <div class="hc">
+          <div class="hc-seg" role="radiogroup" aria-label="Height unit">
+            <span class="hc-seg-glider" aria-hidden="true"></span>
+            <button type="button" class="hc-seg-btn" role="radio" data-unit="floors" aria-checked="true">Floors</button>
+            <button type="button" class="hc-seg-btn" role="radio" data-unit="meters" aria-checked="false">Meters</button>
+            <button type="button" class="hc-seg-btn" role="radio" data-unit="feet" aria-checked="false">Feet</button>
+          </div>
+          <div class="hc-readout">
+            <input id="pFloors" class="hc-field" type="text" inputmode="numeric" autocomplete="off" placeholder="24" data-i18n-ph="floors_ph" aria-label="Building height value" aria-describedby="floorsHint">
+            <span class="hc-suffix">floors</span>
+          </div>
+          <span class="hc-approx" hidden></span>
+          <div class="hc-slider">
+            <div class="hc-rail">
+              <div class="hc-fill"></div>
+              <div class="hc-thumb" role="slider" tabindex="0" aria-label="Building height" aria-orientation="horizontal" aria-valuemin="2" aria-valuemax="120" aria-valuenow="2" aria-valuetext="No height set" aria-describedby="floorsHint">
+                <span class="hc-thumb-dot" aria-hidden="true"></span>
+              </div>
+            </div>
+            <div class="hc-scale">
+              <span class="hc-scale-min">2</span>
+              <span class="hc-scale-max">120</span>
+            </div>
+          </div>
+        </div>
+        <div class="step-hint" id="floorsHint" data-i18n="floors_hint">We score every floor from 1 up to this number</div>
+      </div>
+    </div>
+
+    <div class="place glass" id="place" hidden>
+      <div class="place-main">
+        <div class="pnm" id="placeName">-</div>
+        <div class="padr" id="placeAddr">-</div>
+        <div class="prov" id="placeProv">-</div>
+      </div>
+      <div class="place-stats">
+        <div class="stat"><div class="lab" data-i18n="lab_ground">Ground elevation</div><div class="val" id="pGround">-</div></div>
+        <div class="stat"><div class="lab" data-i18n="lab_aqi">Live US AQI</div><div class="val" id="pAqi">-</div></div>
+        <button type="button" id="exportBtn" aria-label="Export PDF" data-i18n-aria="export_pdf">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3v11"/><path d="M7.5 10.5L12 15l4.5-4.5"/><path d="M4.5 18.5h15"/></svg>
+          <span data-i18n="export_pdf">Export PDF</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="gate-hint" id="gateHint"><span data-i18n="gate_hint">Pick an area and enter your building's floors to see the healthiest levels.</span></div>
+
+  <section id="data">
+    <div class="sec-h"><svg class="secic secic-air" viewBox="0 0 32 32" width="30" height="30" aria-hidden="true" focusable="false">
+  <g opacity="0.3" transform="translate(1,1.6)">
+    <path d="M5 11c5.5 0.4 8 -2.6 12.5 -2.6 3.4 0 4.3 3.4 1.6 4.4" stroke="var(--violet)" stroke-width="2.1" fill="none" stroke-linecap="round"/>
+    <path d="M5 16.5c7 0.5 10 -2.6 16 -2.6 3.8 0 4.6 4 1 5.1" stroke="var(--violet)" stroke-width="2.1" fill="none" stroke-linecap="round"/>
+    <path d="M5 21.5c3.6 0.3 5.6 -1.5 8.6 -1.5" stroke="var(--violet)" stroke-width="2.1" fill="none" stroke-linecap="round"/>
+  </g>
+  <path d="M5 11c5.5 0.4 8 -2.6 12.5 -2.6 3.4 0 4.3 3.4 1.6 4.4" stroke="currentColor" stroke-width="2.1" fill="none" stroke-linecap="round"/>
+  <path d="M5 16.5c7 0.5 10 -2.6 16 -2.6 3.8 0 4.6 4 1 5.1" stroke="currentColor" stroke-width="2.1" fill="none" stroke-linecap="round"/>
+  <path d="M5 21.5c3.6 0.3 5.6 -1.5 8.6 -1.5" stroke="currentColor" stroke-width="2.1" fill="none" stroke-linecap="round"/>
+  <circle cx="25.5" cy="9" r="2.4" fill="var(--violet)" opacity="0.25"/>
+  <circle cx="25.5" cy="9" r="1.3" fill="var(--violet)"/>
+</svg><h2 data-i18n="s1_h2">Live air readings</h2></div>
+    <p class="sec-lead" data-i18n="s1_lead">Current pollutant levels at your chosen location, straight from the Copernicus atmosphere model. Not crowd-sourced guesses.</p>
+    <div class="datagrid" id="aqGrid"></div>
+    <div class="callout glass" id="aqNote"><span class="lbl" data-i18n="s1_note_l">Reading the numbers</span><p data-i18n="s1_note_p">The WHO says yearly PM2.5 should stay under 5 µg/m³. Most Indian cities sit well above that, so the goal is not perfect air, it is choosing the floor that gives you the cleanest slice of what is available.</p></div>
+  </section>
+
+  <section id="elevation">
+    <div class="sec-h"><svg class="secic secic-elevation" viewBox="0 0 32 32" width="30" height="30" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="secic-elevation-grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="currentColor"/>
+      <stop offset="1" stop-color="var(--violet)"/>
+    </linearGradient>
+  </defs>
+  <path d="M3 25L29 25" stroke="var(--violet)" stroke-width="2" stroke-linecap="round" opacity="0.55"/>
+  <path d="M6 25L9.4 18.6M26 25L22.6 18.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity="0.6"/>
+  <g opacity="0.3" transform="translate(1.4,1.6)">
+    <path d="M11 25V14L15 11L19 14V25Z" fill="var(--violet)"/>
+  </g>
+  <path d="M11 25V14L15 11L19 14V25Z" fill="url(#secic-elevation-grad)" stroke="currentColor" stroke-width="1" stroke-linejoin="round"/>
+  <path d="M13.4 25V16.6H16.6V25" fill="none" stroke="rgba(0,0,0,0.35)" stroke-width="1"/>
+  <path d="M15 11V6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+  <circle cx="15" cy="5.2" r="1.3" fill="var(--violet)"/>
+</svg><h2 data-i18n="s2_h2">Elevation, sea level to rooftop</h2></div>
+    <p class="sec-lead" data-i18n="s2_lead">Your building is a thin sliver on top of the land. That is why oxygen barely changes with floor. The pollution that matters lives in the first 150 m above the street.</p>
+    <div class="vizcard glass">
+      <div class="viz-h"><h3 data-i18n="s2_vh">Absolute height vs height above the street</h3><span class="hint" data-i18n="s2_hint">dithered | live elevation</span></div>
+      <canvas id="elevCanvas" class="chart" width="1600" height="900" aria-label="Elevation visual"></canvas>
+      <div class="legend">
+        <span class="li"><i class="sw" style="background:var(--sea)"></i> <span data-i18n="lg_sea">land to plateau</span></span>
+        <span class="li"><i class="sw" style="background:var(--haze)"></i> <span data-i18n="lg_plume">street fumes</span></span>
+        <span class="li"><i class="dt" style="background:var(--haze)"></i> <span data-i18n="lg_inv">night inversion lid</span></span>
+        <span class="li"><i class="dt" style="background:var(--good)"></i> <span data-i18n="lg_best">best band</span></span>
+      </div>
+    </div>
+    <div class="callout glass" id="metNote" hidden><span class="lbl" data-i18n="met_h">Live conditions now</span><p></p></div>
+  </section>
+
+  <section id="index">
+    <div class="sec-h"><svg class="secic secic-score" viewBox="0 0 32 32" width="30" height="30" aria-hidden="true" focusable="false">
+  <path d="M4 25.5H28" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity="0.4"/>
+  <g opacity="0.3" transform="translate(1.4,1.4)">
+    <path d="M4 23C8 22 10 17 13 14S20 11 22 7" stroke="var(--violet)" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  </g>
+  <path d="M4 23C8 22 10 17 13 14S20 11 22 7" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <circle cx="22" cy="7" r="3.4" fill="none" stroke="var(--violet)" stroke-width="1" opacity="0.5"/>
+  <circle cx="22" cy="7" r="1.6" fill="var(--violet)"/>
+</svg><h2 data-i18n="s3_h2">The floor-by-floor score</h2></div>
+    <p class="sec-lead" data-i18n="s3_lead">One score from 0 to 100 for every floor, built from five parts. It climbs off the street, peaks in the low-to-mid 20s, then drops as high wind kills natural airflow.</p>
+
+    <div class="viewtabs" role="tablist" aria-label="Score view type">
+      <button type="button" class="vtab" id="tab-curve" role="tab" aria-selected="true" aria-controls="panel-curve" tabindex="0" data-i18n="tab_curve">Curve</button>
+      <button type="button" class="vtab" id="tab-bars" role="tab" aria-selected="false" aria-controls="panel-bars" tabindex="-1" data-i18n="tab_bars">Bars</button>
+      <button type="button" class="vtab" id="tab-table" role="tab" aria-selected="false" aria-controls="panel-table" tabindex="-1" data-i18n="tab_table">Table</button>
+    </div>
+
+    <div class="viewpanel" id="panel-curve" role="tabpanel" aria-labelledby="tab-curve">
+      <div class="vizcard glass">
+        <div class="viz-h"><h3 data-i18n="s3_vh">Overall score and its five parts</h3><span class="hint" data-i18n="s3_hint">animated</span></div>
+        <canvas id="indexCanvas" class="chart" width="1600" height="820" aria-label="Index chart"></canvas>
+        <div class="legend" id="ixLegend">
+          <span class="li"><i class="sw" style="background:var(--ink);height:4px"></i> <span data-i18n="lg_comp">Overall</span></span>
+          <span class="li"><i class="sw" style="background:var(--crit)"></i> <span data-i18n="lg_pm">PM2.5 / inversion</span></span>
+          <span class="li"><i class="sw" style="background:var(--haze)"></i> <span data-i18n="lg_fumes">Street fumes</span></span>
+          <span class="li"><i class="sw" style="background:var(--violet)"></i> <span data-i18n="lg_vent">Ventilation</span></span>
+          <span class="li"><i class="sw" style="background:var(--good)"></i> <span data-i18n="lg_live">Liveability</span></span>
+          <span class="li"><i class="sw" style="background:var(--ink-faint)"></i> <span data-i18n="lg_ox">Oxygen</span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="viewpanel" id="panel-bars" role="tabpanel" aria-labelledby="tab-bars" hidden aria-hidden="true">
+      <div class="vizcard glass">
+        <div class="viz-h"><h3 data-i18n="s3_vh">Overall score and its five parts</h3><span class="hint" data-i18n="s3_hint">animated</span></div>
+        <canvas id="indexBars" class="chart" width="1600" height="760" aria-label="Score bars chart"></canvas>
+      </div>
+    </div>
+
+    <div class="viewpanel" id="panel-table" role="tabpanel" aria-labelledby="tab-table" hidden aria-hidden="true">
+      <div class="tablecard glass"><div class="tscroll"><table id="scoreTable">
+        <thead><tr></tr></thead><tbody></tbody>
+      </table></div></div>
+    </div>
+
+    <div class="peakbox">
+      <div class="big" id="peakScore">-</div>
+      <div class="tx"><span data-i18n="peak_a">Best floor is</span> <b id="peakFloor">-</b> (<span id="peakH">-</span> <span data-i18n="peak_m">m up</span>). <span data-i18n="peak_b">The sweet-spot band is</span> <b id="peakBand">-</b><span data-i18n="peak_c">, where the score stays within 2 points of the peak while you can still open a window. Ground floors and the very top both sit well below.</span></div>
+    </div>
+    <div class="callout glass" id="robustNote" hidden><span class="lbl" data-i18n="robust_h">How robust is this</span><p></p></div>
+  </section>
+
+  <section id="tiers">
+    <div class="sec-h"><svg class="secic secic-tiers" viewBox="0 0 32 32" width="30" height="30" aria-hidden="true" focusable="false">
+  <g opacity="0.3" transform="translate(1.2,2.2)">
+    <path d="M16 5L27 10L16 15L5 10Z" fill="var(--violet)"/>
+    <path d="M16 13L27 18L16 23L5 18Z" fill="var(--violet)"/>
+    <path d="M16 21L27 26L16 31L5 26Z" fill="var(--violet)"/>
+  </g>
+  <path d="M16 4L27 9L16 14L5 9Z" fill="currentColor" opacity="0.95"/>
+  <path d="M16 12L27 17L16 22L5 17Z" fill="var(--violet)" opacity="0.85"/>
+  <path d="M16 20L27 25L16 30L5 25Z" fill="currentColor" opacity="0.6"/>
+</svg><h2 data-i18n="s4_h2">Score by tier</h2></div>
+    <div class="tablecard glass"><div class="tscroll"><table id="tierTable">
+      <thead><tr>
+        <th data-i18n="th_tier">Tier</th><th data-i18n="th_overall">Overall</th><th data-i18n="th_score" style="min-width:96px">Score</th>
+        <th data-i18n="th_pm">PM2.5</th><th data-i18n="th_fumes">Fumes</th>
+        <th data-i18n="th_vent">Vent</th><th>O₂</th><th data-i18n="th_live">Living</th>
+      </tr></thead><tbody></tbody>
+    </table></div></div>
+    <p class="faint" style="font-size:12.5px;margin-top:9px" data-i18n="s4_note">Ground = lowest 5 floors | Mid = floors 12 to 25 | Top = highest floor. Each part scored 0 to 100, higher is better.</p>
+  </section>
+
+  <section id="method">
+    <div class="sec-h"><svg class="secic secic-method" viewBox="0 0 32 32" width="30" height="30" aria-hidden="true" focusable="false">
+  <g opacity="0.3" transform="translate(1.3,1.3)">
+    <line x1="5" y1="9" x2="27" y2="9" stroke="var(--violet)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="5" y1="16" x2="27" y2="16" stroke="var(--violet)" stroke-width="2" stroke-linecap="round"/>
+    <line x1="5" y1="23" x2="27" y2="23" stroke="var(--violet)" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  <line x1="5" y1="9" x2="27" y2="9" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.55"/>
+  <line x1="5" y1="16" x2="27" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.55"/>
+  <line x1="5" y1="23" x2="27" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.55"/>
+  <circle class="secic-method__knob-a" cx="13" cy="9" r="2.7" fill="currentColor"/>
+  <circle class="secic-method__knob-b" cx="20" cy="16" r="2.7" fill="var(--violet)"/>
+  <circle class="secic-method__knob-c" cx="10" cy="23" r="2.7" fill="currentColor"/>
+</svg><h2 data-i18n="s5_h2">How the score works</h2></div>
+    <p class="sec-lead" data-i18n="s5_lead">Each floor's height feeds five curves. The overall score is their weighted sum. PM2.5 carries the most weight because it is the one thing that genuinely changes your health here. Oxygen carries almost none.</p>
+    <div class="method">
+      <div class="mrow glass"><div class="w">35%</div><div class="n" data-i18n="m1_n">PM2.5 / inversion</div><div class="d" data-i18n="m1_d">Climbs with height as floors clear the trapped night air near the ground.</div></div>
+      <div class="mrow glass"><div class="w">20%</div><div class="n" data-i18n="m2_n">Street fumes</div><div class="d" data-i18n="m2_d">CO, NO₂ and diesel soot fall away fast in the first 50 m, then flatten out.</div></div>
+      <div class="mrow glass"><div class="w">20%</div><div class="n" data-i18n="m3_n">Ventilation</div><div class="d" data-i18n="m3_d">Best around the mid floors. Up high, wind forces sealed windows and full-time AC.</div></div>
+      <div class="mrow glass"><div class="w">20%</div><div class="n" data-i18n="m4_n">Liveability</div><div class="d" data-i18n="m4_d">Fewer mosquitoes and less noise with height, but harder escape and more sway.</div></div>
+      <div class="mrow glass"><div class="w">5%</div><div class="n" data-i18n="m5_n">Oxygen</div><div class="d" data-i18n="m5_d">Almost flat across any single building. Small weight on purpose, it barely matters.</div></div>
+    </div>
+    <div class="callout glass"><span class="lbl" data-i18n="s5_note_l">Honest limits</span><p data-i18n="s5_note_p">The score is a clear guide, not a certified standard. Elevation and live air are real and sourced below. The shape of the height curves comes from standard atmospheric physics tuned to your location's pollution level. The biggest unknown is how deep the night inversion sits, which shifts the best floor by a few floors, never the overall story.</p></div>
+  </section>
+
+  <section id="findings">
+    <div class="sec-h"><svg class="secic secic-findings" viewBox="0 0 32 32" width="30" height="30" aria-hidden="true" focusable="false">
+  <path d="M6 6L7.8 7.8M26 6L24.2 7.8M4 13H6.4M27.6 13H30" stroke="var(--violet)" stroke-width="1.6" stroke-linecap="round" opacity="0.7"/>
+  <g opacity="0.3" transform="translate(1.3,1.5)">
+    <path d="M16 5C11.6 5 8.6 8.4 8.6 12.2C8.6 15.2 10.4 16.9 11.8 18.3C12.8 19.3 13.2 20 13.2 21H18.8C18.8 20 19.2 19.3 20.2 18.3C21.6 16.9 23.4 15.2 23.4 12.2C23.4 8.4 20.4 5 16 5Z" fill="var(--violet)"/>
+    <rect x="13.2" y="22" width="5.6" height="2.4" rx="1" fill="var(--violet)"/>
+    <rect x="13.8" y="25" width="4.4" height="1.8" rx="0.9" fill="var(--violet)"/>
+  </g>
+  <path d="M16 4C11.6 4 8.6 7.4 8.6 11.2C8.6 14.2 10.4 15.9 11.8 17.3C12.8 18.3 13.2 19 13.2 20H18.8C18.8 19 19.2 18.3 20.2 17.3C21.6 15.9 23.4 14.2 23.4 11.2C23.4 7.4 20.4 4 16 4Z" fill="currentColor"/>
+  <path d="M16 7.4A3.8 3.8 0 0 0 12.2 11.2" stroke="rgba(255,255,255,0.55)" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+  <rect x="13.2" y="21" width="5.6" height="2.4" rx="1" fill="var(--violet)"/>
+  <rect x="13.8" y="24" width="4.4" height="1.8" rx="0.9" fill="var(--violet)"/>
+</svg><h2 data-i18n="s6_h2">What it means for you</h2></div>
+    <div class="findings">
+      <div class="fcard good glass"><span class="ftag" data-i18n="fnd_good">Best value</span><h3 data-i18n="f1_h">Aim for a band, not one magic floor</h3><p data-i18n="f1_p">The score is nearly flat across the sweet-spot band. Any home in it clears the street fumes, beats most inversion nights, and still lets you open a window. Buy anywhere in the band and you have already won.</p></div>
+      <div class="fcard warn glass"><span class="ftag" data-i18n="fnd_watch">Worth knowing</span><h3 data-i18n="f2_h">The very top loses on wind, not oxygen</h3><p data-i18n="f2_p">The highest floor has the cleanest raw air but the worst airflow, plus harder escape, sway and sun load. Its penalty is about daily life, not thin air. Oxygen is a rounding error in any building.</p></div>
+      <div class="fcard glass"><span class="ftag" data-i18n="fnd_avoid">Weakest spot</span><h3 data-i18n="f3_h">The ground floor loses where it counts</h3><p data-i18n="f3_p">The lowest floors sit inside both the street fumes and the trapped night air at the exact hours you sleep and breathe deepest. No view or garden makes up for the dirtiest slice of air.</p></div>
+    </div>
+    <div class="callout glass"><span class="lbl" data-i18n="s6_note_l">Bottom line</span><p data-i18n="s6_note_p">Pick a home in the sweet-spot band, facing away from the busiest road, confirm the windows actually open, and run a HEPA purifier in each bedroom. That beats chasing the highest floor you can afford.</p></div>
+  </section>
+
+  <section id="sources">
+    <div class="sec-h"><svg class="secic secic-sources" viewBox="0 0 32 32" width="30" height="30" aria-hidden="true" focusable="false">
+  <circle class="secic-sources__ring" cx="16" cy="13.5" r="9" fill="none" stroke="var(--violet)" stroke-width="1" opacity="0"/>
+  <g opacity="0.3" transform="translate(1.3,1.6)">
+    <path d="M16 3L25 6.4V13C25 19 21.2 22.8 16 24.6C10.8 22.8 7 19 7 13V6.4Z" fill="var(--violet)"/>
+  </g>
+  <path d="M16 3L25 6.4V13C25 19 21.2 22.8 16 24.6C10.8 22.8 7 19 7 13V6.4Z" fill="currentColor" opacity="0.92"/>
+  <path d="M16 3L25 6.4V13C25 19 21.2 22.8 16 24.6Z" fill="var(--violet)" opacity="0.45"/>
+  <path d="M11.6 14L14.6 17L20.6 10.6" stroke="#ffffff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg><h2 data-i18n="s7_h2">Sources and accuracy</h2></div>
+    <p class="sec-lead" data-i18n="s7_lead">Every live number on this page is fetched at the moment you search, from named scientific sources, and time-stamped. No number is invented or cached from memory.</p>
+    <div class="srcgrid" id="srcGrid"></div>
+    <div class="callout glass"><span class="lbl" data-i18n="s7_note_l">Why you can trust these</span><p data-i18n="s7_note_p">Air quality comes from the Copernicus Atmosphere Monitoring Service, a physics-based model run by the EU, not a network of cheap sensors that can drift or be gamed. Elevation comes from the Copernicus 90 m digital terrain model. PIN codes resolve through the official India Post directory. Where a single low-cost station disagrees, treat the model as the steadier reference and re-check on a second day.</p></div>
+  </section>
+
+  <footer>
+    <p data-i18n="foot">AirFloor India | independent environmental and building-microclimate tool | not medical advice. Live air quality: Open-Meteo Air Quality API (Copernicus CAMS). Elevation: Open-Meteo Elevation API (Copernicus DEM GLO-90). Place and PIN lookup: Open-Meteo Geocoding and India Post PIN directory. The floor score is a transparent, physics-informed guide for decisions, not a site measurement.</p>
+    <p class="foot-oss"><span data-i18n="oss_line">Free and open source. Made in India, for India.</span> <a href="LICENSE"><span data-i18n="oss_license">MIT License</span></a> | <a href="privacy.html"><span data-i18n="privacy_link">Privacy</span></a> | <a href="README.md">README</a></p>
+    <p class="foot-oss">Code MIT | Content CC BY 4.0 | <a href="https://www.netlify.com" rel="noopener">This site is powered by Netlify</a></p>
+  </footer>
+</div>
+<script src="heightcontrol.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
