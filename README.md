@@ -65,9 +65,11 @@ Issues and pull requests are welcome, especially for more natural Telugu and Kan
 
 AirFloor is an independent environmental and building-microclimate tool. It is a transparent, physics-informed guide for decisions, not a certified site measurement and not medical advice.
 
-## License
+## Copyright and license
 
-Made in India, for India. Free for anyone to use.
+Created by Yashwanth Kotha. Copyright (c) 2026 Yashwanth Kotha. All rights reserved.
+
+Made in India, for India. Free for anyone to use under these licenses:
 
 - Source code: [MIT License](LICENSE)
 - Site text and report content: [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/)
