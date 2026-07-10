@@ -1007,12 +1007,12 @@ function capList(){
   var r=cEl.input.getBoundingClientRect(); var avail=vv.height - r.bottom - 16;
   cEl.list.style.maxHeight=Math.max(150, Math.min(base, avail))+'px';
 }
-function openAc(){ acOpen=true; cEl.combo.classList.add('open'); cEl.input.setAttribute('aria-expanded','true'); capList(); }
+function openAc(){ acOpen=true; cEl.combo.classList.add('open'); if(cEl.step) cEl.step.classList.add('raised'); cEl.input.setAttribute('aria-expanded','true'); capList(); }
 function setListLoading(loading){ if(!cEl.list) return; cEl.list.setAttribute('aria-busy', loading?'true':'false'); cEl.list.classList.toggle('loading', !!loading); }
 function setFieldSpinner(loading){ if(!cEl.icPin||!cEl.icSpin) return; cEl.icPin.hidden=!!loading; cEl.icSpin.hidden=!loading; }
 function clearAcList(){ cEl.list.textContent=''; OPTS=[]; acActive=-1; cEl.input.removeAttribute('aria-activedescendant'); }
 function closeAc(){
-  acOpen=false; cEl.combo.classList.remove('open'); cEl.input.setAttribute('aria-expanded','false');
+  acOpen=false; cEl.combo.classList.remove('open'); if(cEl.step) cEl.step.classList.remove('raised'); cEl.input.setAttribute('aria-expanded','false');
   clearTimeout(debTimer); reqSeq++; clearAcList(); if(cEl.list) cEl.list.style.maxHeight='';
   setListLoading(false); setFieldSpinner(false);
 }
@@ -1182,7 +1182,7 @@ function refreshPanelForValue(){
   if(q.length<2){ renderEmptyState(); } else { renderSearchLoading(); runQuery(q); }
 }
 function initCombo(){
-  cEl.combo=el('combo'); cEl.input=el('q'); cEl.list=el('acList'); cEl.caret=el('caret'); cEl.clear=el('clearBtn');
+  cEl.combo=el('combo'); cEl.input=el('q'); cEl.list=el('acList'); cEl.caret=el('caret'); cEl.clear=el('clearBtn'); cEl.step=cEl.combo.closest('.step');
   cEl.icPin=document.querySelector('#fieldIcon .ic-pin'); cEl.icSpin=document.querySelector('#fieldIcon .ic-spin');
   cEl.input.addEventListener('input', function(){
     if(suppressInput) return;

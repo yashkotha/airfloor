@@ -232,6 +232,8 @@
   /* ---------- two primary steps ---------- */
   .steps{display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:920px;margin:34px auto 0;align-items:stretch;position:relative;z-index:30;}
   .steps:has(.combo.open){z-index:50;}
+  .step.raised{z-index:60;}
+  .step:has(.combo.open){z-index:60;}
   .step{padding:26px 24px 24px;border-radius:20px;position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;}
   .step-head{display:flex;align-items:center;justify-content:center;gap:11px;margin-bottom:20px;}
   .step-no{flex:none;width:30px;height:30px;border-radius:50%;background:var(--grad);color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;box-shadow:0 5px 14px -4px rgba(124,92,224,.7);}
@@ -444,7 +446,7 @@
   @media print{
     @page{ margin:14mm; }
     html,body{ background:#fff !important; color:#1b1830 !important; }
-    #ditherBg,#bgTint,.topbar,.hero-copy,.steps,#gateHint,#exportBtn,.viewtabs,.status,#acLive,.sr-only{ display:none !important; }
+    #ditherBg,#bgTint,.topbar,.hero-copy,.steps,#gateHint,#exportBtn,.viewtabs,.status,#acLive,.sr-only,.pchips,.fr-clear,#chartTip{ display:none !important; }
     .hero{ padding:0 !important; }
     .hero::before{ display:none !important; }
     .wrap{ max-width:none !important; padding:0 !important; margin:0 !important; }
@@ -456,7 +458,9 @@
       -webkit-backdrop-filter:none !important; backdrop-filter:none !important; border:1px solid #e3e0ef !important; }
     .glass::before{ display:none !important; }
     .place{ margin:0 0 16px !important; padding:14px 16px !important; }
-    section{ break-inside:avoid; page-break-inside:avoid; margin:0 0 16px !important; }
+    section{ break-inside:auto; page-break-inside:auto; margin:0 0 18px !important; padding:0 !important; }
+    .sec-h{ break-after:avoid; page-break-after:avoid; margin-bottom:12px !important; padding-bottom:9px !important; }
+    .callout,.fcard,.dcard,.src,.mrow,.peakbox,.vizcard,.tablecard,.place,#floorReport{ break-inside:avoid; page-break-inside:avoid; }
     h1,h2,h3{ color:#1b1830 !important; }
     p,.soft,.faint,td,th,li,.lab,.val,.sec-lead{ color:#3a3556 !important; }
     a{ color:#5a3fc0 !important; text-decoration:none; }
