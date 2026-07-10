@@ -1,0 +1,79 @@
+{
+  "$schema": "https://fundingjson.org/schema/v1.0.0.json",
+  "version": "v1.0.0",
+  "entity": {
+    "type": "individual",
+    "role": "owner",
+    "name": "Yashwanth Kotha",
+    "email": "yash@dropcap.design",
+    "description": "Independent developer and designer. Maintainer of AirFloor, a free and open-source air-health tool built for India.",
+    "webpageUrl": {
+      "url": "https://airfloor.netlify.app"
+    }
+  },
+  "projects": [
+    {
+      "guid": "airfloor",
+      "name": "AirFloor",
+      "description": "AirFloor scores every floor of an apartment building in India for how clean and healthy the air is to breathe. It combines live air-quality data (Copernicus CAMS), real ground elevation (Copernicus DEM) and live meteorology (boundary-layer depth, wind at height, atmospheric stability) to model how pollution changes with height, then publishes an honest 0 to 100 score for each floor along with an explicit uncertainty band. Air pollution is one of the largest public-health burdens in India, and the air a family breathes differs meaningfully between the ground floor and the twentieth. That information is normally invisible when people rent or buy a home. AirFloor makes it free, private and available in English, Telugu and Kannada. It is a static site that collects nothing: no accounts, no cookies, no analytics, no backend. Funding is sought to keep it free of ads and paywalls, to cover hosting, a domain and monitoring, and to fund continued maintenance: bias-correcting the model against Indian ground-reference monitors, expanding language coverage, and improving accessibility.",
+      "webpageUrl": {
+        "url": "https://airfloor.netlify.app"
+      },
+      "repositoryUrl": {
+        "url": "https://github.com/yashkotha/airfloor",
+        "wellKnown": "https://raw.githubusercontent.com/yashkotha/airfloor/main/.well-known/funding-manifest-urls"
+      },
+      "licenses": [
+        "spdx:MIT",
+        "spdx:CC-BY-4.0"
+      ],
+      "tags": [
+        "air-quality",
+        "environment",
+        "india",
+        "public-health",
+        "open-data",
+        "civic-tech",
+        "climate",
+        "data-visualisation",
+        "accessibility",
+        "javascript"
+      ]
+    }
+  ],
+  "funding": {
+    "channels": [
+      {
+        "guid": "direct",
+        "type": "other",
+        "description": "No public payment provider is configured yet. Grant disbursement or a bank transfer can be arranged directly with the maintainer by email."
+      }
+    ],
+    "plans": [
+      {
+        "guid": "maintenance-year",
+        "status": "active",
+        "name": "One year of maintenance and infrastructure",
+        "description": "Covers hosting, domain, uptime and error monitoring, and the maintainer's time for one year: bias-correcting the vertical model against Indian reference monitors, widening language coverage beyond English, Telugu and Kannada, and keeping AirFloor free and ad-free for everyone in India.",
+        "amount": 10000,
+        "currency": "USD",
+        "frequency": "one-time",
+        "channels": [
+          "direct"
+        ]
+      },
+      {
+        "guid": "any-support",
+        "status": "active",
+        "name": "Any amount",
+        "description": "Any contribution towards keeping AirFloor free, independent and ad-free.",
+        "amount": 0,
+        "currency": "USD",
+        "frequency": "one-time",
+        "channels": [
+          "direct"
+        ]
+      }
+    ]
+  }
+}
