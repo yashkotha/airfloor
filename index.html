@@ -38,7 +38,7 @@
     --violet:#7c5ce0; --violet-2:#6d4fd6; --violet-deep:#5a3fc0; --magenta:#a24fd0;
     --grad:linear-gradient(135deg,#a78bfa 0%,#8b6fe6 55%,#7c5ce0 100%);
     --grad-soft:linear-gradient(135deg,rgba(167,139,250,.16),rgba(124,92,224,.07));
-    --good:#0f9d6e; --warn:#c07d1a; --crit:#d1495b; --sea:#7fa8d8; --haze:#d09a3e; --dot-ring:rgba(20,16,40,.5); --land-fill:rgba(124,92,224,.09); --land-edge:rgba(90,70,160,.20);
+    --good:#0f9d6e; --warn:#c07d1a; --crit:#d1495b; --sea:#7fa8d8; --haze:#d09a3e; --dot-ring:rgba(20,16,40,.5); --land-fill:#e7e2f6; --land-edge:rgba(90,70,160,.20);
     --shadow:0 1px 2px rgba(40,30,90,.05), 0 18px 44px -26px rgba(90,70,160,.30);
     --glow:0 0 0 1px rgba(124,92,224,.10), 0 10px 30px -12px rgba(124,92,224,.30);
     --maxw:1080px;
@@ -51,7 +51,7 @@
     --violet:#a855f7; --violet-2:#8b5cf6; --violet-deep:#6d28d9; --magenta:#c026d3;
     --grad:linear-gradient(135deg,#c084fc 0%,#8b5cf6 46%,#6d28d9 100%);
     --grad-soft:linear-gradient(135deg,rgba(192,132,252,.22),rgba(109,40,217,.10));
-    --good:#34d399; --warn:#fbbf24; --crit:#fb7185; --sea:#5b7fb0; --haze:#eaa24a; --dot-ring:rgba(255,255,255,.85); --land-fill:rgba(168,140,255,.12); --land-edge:rgba(168,140,255,.18);
+    --good:#34d399; --warn:#fbbf24; --crit:#fb7185; --sea:#5b7fb0; --haze:#eaa24a; --dot-ring:rgba(255,255,255,.85); --land-fill:#1d1731; --land-edge:rgba(168,140,255,.18);
     --shadow:0 2px 8px rgba(0,0,0,.4), 0 30px 70px -32px rgba(76,29,149,.7);
     --glow:0 0 0 1px rgba(180,150,255,.14), 0 8px 30px -8px rgba(139,92,246,.5);
   }
@@ -430,7 +430,7 @@
   .airmap-card{display:flex;gap:26px;padding:22px;border-radius:20px;align-items:center;}
   .airmap-wrap{position:relative;flex:0 0 auto;}
   #airmapSvg{display:block;height:min(64vh,470px);width:auto;max-width:100%;overflow:visible;}
-  .airmap-land path{fill:var(--land-fill);stroke:var(--land-edge);stroke-width:.5;stroke-linejoin:round;vector-effect:non-scaling-stroke;}
+  .airmap-land path{fill:var(--land-fill);stroke:var(--land-fill);stroke-width:.7;stroke-linejoin:round;vector-effect:non-scaling-stroke;}
   .airmap-city{cursor:pointer;}
   .airmap-city:focus{outline:none;}
   .airmap-halo{fill:transparent;transition:fill .2s;}
@@ -908,7 +908,7 @@
       <button type="button" class="pchip" data-p="asthma" aria-pressed="false" data-i18n="p_asthma">Asthma or COPD</button>
       <button type="button" class="pchip" data-p="run" aria-pressed="false" data-i18n="p_run">Runners</button>
     </div>
-    <div class="callout glass adv-box" id="adviceBox"><span class="lbl" id="adviceLbl"></span><p id="adviceBody" aria-live="polite"></p>
+    <div class="callout glass adv-box" id="adviceBox" hidden><span class="lbl" id="adviceLbl"></span><p id="adviceBody" aria-live="polite"></p>
       <p id="adviceFloor" class="adv-floor" hidden></p>
       <span class="adv-disc" data-i18n="adv_disc">General guidance, not medical advice.</span></div>
   </section>
