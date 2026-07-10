@@ -176,7 +176,15 @@ function computeUncertainty(){
     }
     if(gN&&bN && (bSum/bN)-(gSum/gN) >= 2) beat++;
   }
-  scoreBand=cols.map(function(a){ a.sort(function(x,y){return x-y;}); return { lo:a[Math.floor(0.1*a.length)], hi:a[Math.min(a.length-1,Math.floor(0.9*a.length))] }; });
+  /* keep the SPREAD of scenarios but centre it on the deterministic curve
+     (the sampler's clamps are asymmetric, so raw percentiles can sit wholly
+     below the drawn line and read as a rendering bug) */
+  scoreBand=cols.map(function(a,i){
+    a.sort(function(x,y){return x-y;});
+    var p10=a[Math.floor(0.1*a.length)], p50=a[Math.floor(0.5*a.length)], p90=a[Math.min(a.length-1,Math.floor(0.9*a.length))];
+    var det=series[i].index;
+    return { lo:Math.max(0,det+(p10-p50)), hi:Math.min(100,det+(p90-p50)) };
+  });
   robust={ pct:Math.round(100*beat/K), lo:bandLo, hi:bandHi };
 }
 /* ---- P1/P2 readouts ---- */
