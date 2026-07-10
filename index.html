@@ -372,6 +372,19 @@
   .fcard p{font-size:14px;max-width:none;margin:0;text-align:left;line-height:1.6;color:var(--ink-soft);}
   @media (max-width:820px){ .findings{grid-template-columns:1fr;} }
 
+  /* ---------- household advice ---------- */
+  body.no-location #advice, body.no-floors #advice{display:none;}
+  .pchips{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:2px 0 18px;}
+  .pchip{border:1px solid var(--glass-brd);background:var(--glass-2);color:var(--ink-soft);cursor:pointer;
+    font-family:var(--font);font-weight:700;font-size:13.5px;padding:10px 18px;border-radius:100px;
+    transition:color .2s, background .2s, transform .2s, box-shadow .2s;}
+  .pchip:hover{transform:translateY(-1px);}
+  .pchip.active{background:var(--grad);color:#fff;border-color:transparent;box-shadow:var(--glow);}
+  .pchip:focus-visible{outline:2px solid var(--violet);outline-offset:2px;}
+  .adv-box{margin-top:0;}
+  .adv-box p{font-size:15px;line-height:1.65;}
+  .adv-disc{display:block;margin-top:10px;font-size:11px;color:var(--ink-faint);}
+
   .srcgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;justify-content:center;margin-top:8px;}
   .src{padding:18px;border-radius:16px;}
   .src .st{font-weight:700;font-size:14px;display:flex;align-items:center;gap:8px;}
@@ -783,6 +796,28 @@
       <div class="fcard glass"><span class="ftag" data-i18n="fnd_avoid">Weakest spot</span><h3 data-i18n="f3_h">The ground floor loses where it counts</h3><p data-i18n="f3_p">The lowest floors sit inside both the street fumes and the trapped night air at the exact hours you sleep and breathe deepest. No view or garden makes up for the dirtiest slice of air.</p></div>
     </div>
     <div class="callout glass"><span class="lbl" data-i18n="s6_note_l">Bottom line</span><p data-i18n="s6_note_p">Pick a home in the sweet-spot band, facing away from the busiest road, confirm the windows actually open, and run a HEPA purifier in each bedroom. That beats chasing the highest floor you can afford.</p></div>
+  </section>
+
+  <section id="advice">
+    <div class="sec-h"><svg class="secic secic-advice" viewBox="0 0 32 32" width="30" height="30" aria-hidden="true" focusable="false">
+      <g opacity="0.3" transform="translate(1.2,1.2)">
+        <circle cx="12" cy="10" r="4.4" fill="var(--violet)"/>
+        <path d="M4.5 26c0-4.4 3.3-7.4 7.5-7.4s7.5 3 7.5 7.4" fill="var(--violet)"/>
+      </g>
+      <circle cx="12" cy="10" r="4.4" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M4.5 26c0-4.4 3.3-7.4 7.5-7.4s7.5 3 7.5 7.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="22.5" cy="12.5" r="3.2" fill="none" stroke="var(--violet)" stroke-width="1.8"/>
+      <path d="M17.8 24.5c0.6-3.4 2.5-5.4 5.2-5.4 2.6 0 4.4 1.8 5 5" fill="none" stroke="var(--violet)" stroke-width="1.8" stroke-linecap="round"/>
+    </svg><h2 data-i18n="adv_h">Advice for your household</h2></div>
+    <p class="sec-lead" data-i18n="adv_lead">Pick who you are planning for and get guidance matched to today's air and this building.</p>
+    <div class="pchips" role="group" aria-label="Household member">
+      <button type="button" class="pchip active" data-p="kids" aria-pressed="true" data-i18n="p_kids">Young children</button>
+      <button type="button" class="pchip" data-p="elder" aria-pressed="false" data-i18n="p_elder">Elderly</button>
+      <button type="button" class="pchip" data-p="asthma" aria-pressed="false" data-i18n="p_asthma">Asthma or COPD</button>
+      <button type="button" class="pchip" data-p="run" aria-pressed="false" data-i18n="p_run">Runners</button>
+    </div>
+    <div class="callout glass adv-box" id="adviceBox"><span class="lbl" id="adviceLbl"></span><p id="adviceBody" aria-live="polite"></p>
+      <span class="adv-disc" data-i18n="adv_disc">General guidance, not medical advice.</span></div>
   </section>
 
   <section id="sources">
