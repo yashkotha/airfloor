@@ -296,7 +296,7 @@
   .dcard{padding:22px 18px;border-radius:16px;text-align:left;}
   .dcard .k{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;}
   .dcard .v{font-size:27px;font-weight:800;margin-top:7px;line-height:1.05;}
-  .dcard .v small{font-size:12.5px;color:var(--ink-faint);font-weight:600;}
+  .dcard .v small{display:block;margin-top:1px;font-size:12.5px;color:var(--ink-faint);font-weight:600;}
   .dcard .sub{font-size:11.5px;color:var(--ink-soft);margin-top:7px;line-height:1.4;}
   .pill-i{display:inline-block;font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:100px;margin-top:10px;}
   .p-good{background:color-mix(in srgb,var(--good) 20%,transparent);color:var(--good);}
@@ -320,7 +320,7 @@
   .aqs-seg{flex:1;border-radius:3px;opacity:.9;}
   .aqs-marker{position:absolute;top:-6px;bottom:-6px;width:4px;border-radius:4px;background:#1b1830;left:0;transform:translateX(-50%);transition:left .5s cubic-bezier(.4,0,.2,1);box-shadow:0 0 0 3px rgba(255,255,255,.95),0 2px 8px rgba(0,0,0,.3);}
   .aqs-ticks{display:flex;justify-content:space-between;margin-top:9px;font-size:11px;color:var(--ink-faint);font-weight:600;}
-  @media (max-width:480px){ .aqs-num{font-size:38px;} .aqs-ticks{font-size:10px;} }
+  @media (max-width:480px){ .aqs-num{font-size:38px;} .aqs-ticks{font-size:10px;} .chk-tabs{flex-direction:column;} .chk-tab{flex:auto;width:100%;} }
   .p-live{background:var(--grad-soft);color:var(--violet-deep);border:1px solid var(--hair);}
 
   .vizcard{padding:22px;margin-top:8px;border-radius:20px;}
@@ -427,7 +427,7 @@
   #checklist .adv-disc{margin-top:16px;}
 
   /* live AQI map of India */
-  .airmap-card{display:flex;gap:26px;padding:24px;border-radius:24px;align-items:center;}
+  .airmap-card{display:flex;gap:26px;padding:22px;border-radius:20px;align-items:center;}
   .airmap-wrap{position:relative;flex:0 0 auto;}
   #airmapSvg{display:block;height:min(64vh,470px);width:auto;max-width:100%;overflow:visible;}
   .airmap-land path{fill:var(--land-fill);stroke:var(--land-edge);stroke-width:.5;stroke-linejoin:round;vector-effect:non-scaling-stroke;}
@@ -440,7 +440,9 @@
   .airmap-tip{position:absolute;left:0;top:0;transform:translate(-50%,calc(-100% - 12px));background:#241d3f;color:#fff;padding:7px 11px;border-radius:10px;font-size:12.5px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;box-shadow:0 10px 28px -8px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:1px;z-index:6;}
   .airmap-tip.show{opacity:1;}
   .airmap-tip .amt-name{font-weight:700;}
-  .airmap-tip .amt-val{font-weight:700;font-size:12px;}
+  .airmap-tip .amt-valrow{display:flex;align-items:center;}
+  .airmap-tip .amt-dot{width:8px;height:8px;border-radius:50%;margin-right:6px;flex:none;}
+  .airmap-tip .amt-val{font-weight:700;font-size:12px;color:#fff;}
   .airmap-side{display:flex;flex-direction:column;justify-content:center;gap:15px;min-width:190px;}
   .airmap-legend{display:flex;flex-direction:column;gap:10px;}
   .aml-item{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--ink-soft);}
@@ -954,7 +956,7 @@
   </g>
   <path d="M16 3L25 6.4V13C25 19 21.2 22.8 16 24.6C10.8 22.8 7 19 7 13V6.4Z" fill="currentColor" opacity="0.92"/>
   <path d="M16 3L25 6.4V13C25 19 21.2 22.8 16 24.6Z" fill="var(--violet)" opacity="0.45"/>
-  <path d="M11.6 14L14.6 17L20.6 10.6" stroke="#ffffff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <path d="M11.6 14L14.6 17L20.6 10.6" stroke="var(--bg-1)" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
 </svg><h2 data-i18n="s7_h2">Sources and accuracy</h2></div>
     <p class="sec-lead" data-i18n="s7_lead">Every live number on this page is fetched at the moment you search, from named scientific sources, and time-stamped. No number is invented or cached from memory.</p>
     <div class="srcgrid" id="srcGrid"></div>
@@ -971,7 +973,7 @@
     <div class="airmap-card glass">
       <div class="airmap-wrap" id="airmapWrap">
         <svg id="airmapSvg" viewBox="0 0 473 522" role="group" data-i18n-aria="map_aria"></svg>
-        <div class="airmap-tip" id="airmapTip" aria-hidden="true"><span id="airmapTipName" class="amt-name"></span><span id="airmapTipVal" class="amt-val"></span></div>
+        <div class="airmap-tip" id="airmapTip" aria-hidden="true"><span id="airmapTipName" class="amt-name"></span><span class="amt-valrow"><span class="amt-dot" id="airmapTipDot"></span><span id="airmapTipVal" class="amt-val"></span></span></div>
       </div>
       <div class="airmap-side">
         <div class="airmap-legend" aria-hidden="true">

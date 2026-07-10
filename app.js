@@ -412,9 +412,9 @@ function showAirmapTip(i,cx,cy){
   var tip=el('airmapTip'), wrap=el('airmapWrap'), svg=el('airmapSvg'); if(!tip||!wrap||!svg) return;
   var c=AQMAP.cities[i], d=AQMAP.dots[i]; if(!c||!d) return;
   el('airmapTipName').textContent=cityMapName(c);
-  var v=el('airmapTipVal');
-  if(d.aqi==null){ v.textContent=T('map_na'); v.style.color=''; }
-  else { v.textContent=Math.round(d.aqi)+' '+T('cat_'+catKey(d.aqi)); v.style.color=aqiColor(d.aqi); }
+  var v=el('airmapTipVal'), dot=el('airmapTipDot');
+  if(d.aqi==null){ v.textContent=T('map_na'); if(dot) dot.style.display='none'; }
+  else { v.textContent=Math.round(d.aqi)+' '+T('cat_'+catKey(d.aqi)); if(dot){ dot.style.display=''; dot.style.background=aqiColor(d.aqi); } }
   /* place the tip over the dot, converting viewBox coords to pixels */
   var r=svg.getBoundingClientRect(), wr=wrap.getBoundingClientRect();
   var VBW=mapVBW(), VBH=mapVBH();
@@ -586,13 +586,14 @@ function drawElevation(p){
     var yRl=ay(roof)-6, yGl=Math.max(yG-6, yRl+16);
     ctx.fillStyle=ink; ctx.font=F(fs,'700'); ctx.fillText(T('cv_ground')+' '+Math.round(G)+' m', aX+5, yGl);
     if(tp>=1){ ctx.fillText(T('cv_roof')+' '+Math.round(roof)+' m', aX+5, yRl);
-      ctx.fillStyle=soft; ctx.font=F(small?9.5:fs);
-      ctx.fillText(Math.round(pressureHpa(roof))+' hPa | O₂ '+pio2(roof).toFixed(0), aX+aW*0.55, yRl);
-      ctx.fillText(Math.round(pressureHpa(G))+' hPa | O₂ '+pio2(G).toFixed(0), aX+aW*0.55, yGl);
+      ctx.fillStyle=soft; ctx.font=F(small?9.5:fs); ctx.textAlign='right';
+      ctx.fillText(Math.round(pressureHpa(roof))+' hPa | O₂ '+pio2(roof).toFixed(0), aX+aW-3, yRl);
+      ctx.fillText(Math.round(pressureHpa(G))+' hPa | O₂ '+pio2(G).toFixed(0), aX+aW-3, yGl);
+      ctx.textAlign='left';
     }
   }
   ctx.fillStyle=soft; ctx.font=F(fs2,'700'); ctx.fillText(T('cv_abs'), aX, aY-(small?9:16));
-  if(p>=1){ ctx.fillStyle=good; ctx.font=F(fs); ctx.fillText(T('cv_delta')+' ≈ '+(pio2(G)-pio2(roof)).toFixed(1)+' mmHg', aX, aBot+(small?22:30)); }
+  if(p>=1){ ctx.fillStyle=good; var cap=T('cv_delta')+' ≈ '+(pio2(G)-pio2(roof)).toFixed(1)+' mmHg', capFs=fs; ctx.font=F(capFs); var wCap=ctx.measureText(cap).width; if(wCap>aW){ ctx.font=F(fs*aW/wCap*0.97); } ctx.fillText(cap, aX, aBot+(small?22:30)); }
 
   /* ---------- Panel B: above the street (live inversion height) ---------- */
   var invLine=Math.max(60,Math.min(MODEL.invH,340));
