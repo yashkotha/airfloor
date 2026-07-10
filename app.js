@@ -364,7 +364,7 @@ function aqiColor(a){
   if(a<=50) return '#2fa96b'; if(a<=100) return '#c8902c'; if(a<=150) return '#dd7f3e';
   if(a<=200) return '#d15563'; if(a<=300) return '#9b5bb0'; return '#8c4a54';
 }
-var MAPB={latMin:7,latMax:35.6,lonMin:68,lonMax:93};
+var MAPB={latMin:6.5,latMax:37.4,lonMin:67.7,lonMax:97.7};
 var MAP_UNIT=16, MAP_PAD=14;
 function mapMidCos(){ return Math.cos(((MAPB.latMin+MAPB.latMax)/2)*Math.PI/180); }
 function mapVBW(){ return (MAPB.lonMax-MAPB.lonMin)*MAP_UNIT*mapMidCos()+MAP_PAD*2; }
@@ -375,14 +375,16 @@ var AQMAP={ built:false, dots:[], cities:[], stamp:null, stale:false, timer:0 };
 
 function buildAirmap(cities){
   var svg=el('airmapSvg'); if(!svg) return;
-  var VBW=mapVBW(), VBH=mapVBH();
-  svg.setAttribute('viewBox','0 0 '+VBW.toFixed(0)+' '+VBH.toFixed(0));
+  var geo=window.INDIA_GEO;
+  var VBW=geo?geo.vbw:mapVBW(), VBH=geo?geo.vbh:mapVBH();
+  svg.setAttribute('viewBox','0 0 '+VBW+' '+VBH);
   while(svg.firstChild) svg.removeChild(svg.firstChild);
-  /* faint graticule, purely mathematical, no political borders */
-  var grat=svgEl('g',{'class':'airmap-grat'});
-  for(var lo=70; lo<=90; lo+=5){ var x=mapX(lo); grat.appendChild(svgEl('line',{x1:x,y1:MAP_PAD,x2:x,y2:VBH-MAP_PAD})); }
-  for(var la=10; la<=35; la+=5){ var y=mapY(la); grat.appendChild(svgEl('line',{x1:MAP_PAD,y1:y,x2:VBW-MAP_PAD,y2:y})); }
-  svg.appendChild(grat);
+  /* real India landmass (official full-claim boundary), self-hosted SVG, no map tiles */
+  if(geo && geo.paths){
+    var land=svgEl('g',{'class':'airmap-land'});
+    geo.paths.forEach(function(d){ land.appendChild(svgEl('path',{d:d})); });
+    svg.appendChild(land);
+  }
   AQMAP.dots=[]; AQMAP.cities=cities;
   cities.forEach(function(c,i){
     var g=svgEl('g',{'class':'airmap-city', tabindex:'0', role:'button'});

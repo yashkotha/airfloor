@@ -38,7 +38,7 @@
     --violet:#7c5ce0; --violet-2:#6d4fd6; --violet-deep:#5a3fc0; --magenta:#a24fd0;
     --grad:linear-gradient(135deg,#a78bfa 0%,#8b6fe6 55%,#7c5ce0 100%);
     --grad-soft:linear-gradient(135deg,rgba(167,139,250,.16),rgba(124,92,224,.07));
-    --good:#0f9d6e; --warn:#c07d1a; --crit:#d1495b; --sea:#7fa8d8; --haze:#d09a3e; --dot-ring:rgba(20,16,40,.5);
+    --good:#0f9d6e; --warn:#c07d1a; --crit:#d1495b; --sea:#7fa8d8; --haze:#d09a3e; --dot-ring:rgba(20,16,40,.5); --land-fill:rgba(124,92,224,.09); --land-edge:rgba(90,70,160,.20);
     --shadow:0 1px 2px rgba(40,30,90,.05), 0 18px 44px -26px rgba(90,70,160,.30);
     --glow:0 0 0 1px rgba(124,92,224,.10), 0 10px 30px -12px rgba(124,92,224,.30);
     --maxw:1080px;
@@ -51,7 +51,7 @@
     --violet:#a855f7; --violet-2:#8b5cf6; --violet-deep:#6d28d9; --magenta:#c026d3;
     --grad:linear-gradient(135deg,#c084fc 0%,#8b5cf6 46%,#6d28d9 100%);
     --grad-soft:linear-gradient(135deg,rgba(192,132,252,.22),rgba(109,40,217,.10));
-    --good:#34d399; --warn:#fbbf24; --crit:#fb7185; --sea:#5b7fb0; --haze:#eaa24a; --dot-ring:rgba(255,255,255,.85);
+    --good:#34d399; --warn:#fbbf24; --crit:#fb7185; --sea:#5b7fb0; --haze:#eaa24a; --dot-ring:rgba(255,255,255,.85); --land-fill:rgba(168,140,255,.12); --land-edge:rgba(168,140,255,.18);
     --shadow:0 2px 8px rgba(0,0,0,.4), 0 30px 70px -32px rgba(76,29,149,.7);
     --glow:0 0 0 1px rgba(180,150,255,.14), 0 8px 30px -8px rgba(139,92,246,.5);
   }
@@ -411,7 +411,7 @@
   .airmap-card{display:flex;gap:26px;padding:24px;border-radius:24px;align-items:center;}
   .airmap-wrap{position:relative;flex:0 0 auto;}
   #airmapSvg{display:block;height:min(64vh,470px);width:auto;max-width:100%;overflow:visible;}
-  .airmap-grat line{stroke:var(--hair-2);stroke-width:1;}
+  .airmap-land path{fill:var(--land-fill);stroke:var(--land-edge);stroke-width:.5;stroke-linejoin:round;vector-effect:non-scaling-stroke;}
   .airmap-city{cursor:pointer;}
   .airmap-city:focus{outline:none;}
   .airmap-halo{fill:transparent;transition:fill .2s;}
@@ -940,7 +940,7 @@
     <p class="sec-lead" data-i18n="map_lead">The current US AQI at fifty cities, refreshed every five minutes from the Copernicus model. Tap a city to read its air.</p>
     <div class="airmap-card glass">
       <div class="airmap-wrap" id="airmapWrap">
-        <svg id="airmapSvg" viewBox="0 0 373 470" role="group" data-i18n-aria="map_aria"></svg>
+        <svg id="airmapSvg" viewBox="0 0 473 522" role="group" data-i18n-aria="map_aria"></svg>
         <div class="airmap-tip" id="airmapTip" aria-hidden="true"><span id="airmapTipName" class="amt-name"></span><span id="airmapTipVal" class="amt-val"></span></div>
       </div>
       <div class="airmap-side">
@@ -966,6 +966,7 @@
   </footer>
 </div>
 <script src="heightcontrol.js"></script>
+<script src="india-geo.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
