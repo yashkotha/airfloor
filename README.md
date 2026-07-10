@@ -1,6 +1,10 @@
 # AirFloor
 
+[![Deploys by Netlify](https://www.netlify.com/img/global/badges/netlify-color-accent.svg)](https://www.netlify.com)
+
 **Which floor should you live on? Ask the air.**
+
+This site is powered by [Netlify](https://www.netlify.com).
 
 AirFloor scores every floor of an apartment building in India for how clean and healthy the air is to breathe, using live air-quality data and the real ground elevation for any place in the country. Find the best floors to breathe before you rent or buy.
 
