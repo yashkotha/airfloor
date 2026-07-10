@@ -38,7 +38,7 @@
     --violet:#7c5ce0; --violet-2:#6d4fd6; --violet-deep:#5a3fc0; --magenta:#a24fd0;
     --grad:linear-gradient(135deg,#a78bfa 0%,#8b6fe6 55%,#7c5ce0 100%);
     --grad-soft:linear-gradient(135deg,rgba(167,139,250,.16),rgba(124,92,224,.07));
-    --good:#0f9d6e; --warn:#c07d1a; --crit:#d1495b; --sea:#7fa8d8; --haze:#d09a3e;
+    --good:#0f9d6e; --warn:#c07d1a; --crit:#d1495b; --sea:#7fa8d8; --haze:#d09a3e; --dot-ring:rgba(20,16,40,.5);
     --shadow:0 1px 2px rgba(40,30,90,.05), 0 18px 44px -26px rgba(90,70,160,.30);
     --glow:0 0 0 1px rgba(124,92,224,.10), 0 10px 30px -12px rgba(124,92,224,.30);
     --maxw:1080px;
@@ -51,7 +51,7 @@
     --violet:#a855f7; --violet-2:#8b5cf6; --violet-deep:#6d28d9; --magenta:#c026d3;
     --grad:linear-gradient(135deg,#c084fc 0%,#8b5cf6 46%,#6d28d9 100%);
     --grad-soft:linear-gradient(135deg,rgba(192,132,252,.22),rgba(109,40,217,.10));
-    --good:#34d399; --warn:#fbbf24; --crit:#fb7185; --sea:#5b7fb0; --haze:#eaa24a;
+    --good:#34d399; --warn:#fbbf24; --crit:#fb7185; --sea:#5b7fb0; --haze:#eaa24a; --dot-ring:rgba(255,255,255,.85);
     --shadow:0 2px 8px rgba(0,0,0,.4), 0 30px 70px -32px rgba(76,29,149,.7);
     --glow:0 0 0 1px rgba(180,150,255,.14), 0 8px 30px -8px rgba(139,92,246,.5);
   }
@@ -377,6 +377,7 @@
 
   /* ---------- household advice ---------- */
   body.no-location #advice, body.no-floors #advice{display:none;}
+  body.no-location #checklist{display:none;}
   .pchips{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:2px 0 18px;}
   .pchip{border:1px solid var(--glass-brd);background:var(--glass-2);color:var(--ink-soft);cursor:pointer;
     font-family:var(--font);font-weight:700;font-size:13.5px;padding:10px 18px;border-radius:100px;
@@ -389,6 +390,56 @@
   .adv-disc{display:block;margin-top:10px;font-size:11px;color:var(--ink-faint);}
   .adv-floor{margin-top:10px;padding-top:10px;border-top:1px solid var(--hair-2);font-size:14px;line-height:1.6;color:var(--violet-deep);font-weight:600;}
   .adv-floor[hidden]{display:none;}
+
+  /* buyer guidance checklist */
+  .chk-tabs{display:inline-flex;gap:3px;padding:4px;border-radius:100px;background:var(--grad-soft);border:1px solid var(--hair);margin:0 0 22px;}
+  .chk-tab{appearance:none;-webkit-appearance:none;border:0;cursor:pointer;font:inherit;font-weight:700;font-size:13.5px;color:var(--ink-soft);background:transparent;padding:10px 18px;border-radius:100px;transition:color .2s,background .2s,box-shadow .2s;}
+  .chk-tab:hover{color:var(--ink);}
+  .chk-tab.active{color:#fff;background:var(--grad);box-shadow:0 4px 16px -3px rgba(139,92,246,.55);}
+  .chk-tab:focus-visible{outline:2px solid var(--violet);outline-offset:2px;}
+  .chk-list{list-style:none;margin:0;padding:0;display:grid;gap:12px;}
+  .chk-list[hidden]{display:none;}
+  .chk-item{display:flex;gap:14px;align-items:flex-start;padding:16px 18px;border-radius:16px;background:var(--grad-soft);border:1px solid var(--hair-2);}
+  .chk-num{flex:none;width:26px;height:26px;border-radius:9px;background:var(--grad);color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px -3px rgba(124,92,224,.5);margin-top:2px;}
+  .chk-item>div{display:flex;flex-direction:column;gap:4px;}
+  .chk-t{font-weight:700;font-size:15.5px;color:var(--ink);letter-spacing:-.01em;}
+  .chk-b{font-size:14px;color:var(--ink-soft);line-height:1.55;}
+  #checklist .adv-disc{margin-top:16px;}
+
+  /* live AQI map of India */
+  .airmap-card{display:flex;gap:26px;padding:24px;border-radius:24px;align-items:center;}
+  .airmap-wrap{position:relative;flex:0 0 auto;}
+  #airmapSvg{display:block;height:min(64vh,470px);width:auto;max-width:100%;overflow:visible;}
+  .airmap-grat line{stroke:var(--hair-2);stroke-width:1;}
+  .airmap-city{cursor:pointer;}
+  .airmap-city:focus{outline:none;}
+  .airmap-halo{fill:transparent;transition:fill .2s;}
+  .airmap-city:hover .airmap-halo,.airmap-city:focus .airmap-halo,.airmap-city.sel .airmap-halo{fill:rgba(124,92,224,.20);}
+  .airmap-dot{stroke:var(--dot-ring,rgba(20,16,40,.5));stroke-width:1.2;transition:fill .6s ease;}
+  .airmap-city.sel .airmap-dot{stroke:var(--ink);stroke-width:1.7;}
+  .airmap-tip{position:absolute;left:0;top:0;transform:translate(-50%,calc(-100% - 12px));background:#241d3f;color:#fff;padding:7px 11px;border-radius:10px;font-size:12.5px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;box-shadow:0 10px 28px -8px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:1px;z-index:6;}
+  .airmap-tip.show{opacity:1;}
+  .airmap-tip .amt-name{font-weight:700;}
+  .airmap-tip .amt-val{font-weight:700;font-size:12px;}
+  .airmap-side{display:flex;flex-direction:column;justify-content:center;gap:15px;min-width:190px;}
+  .airmap-legend{display:flex;flex-direction:column;gap:10px;}
+  .aml-item{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--ink-soft);}
+  .aml-item i{width:13px;height:13px;border-radius:4px;flex:none;}
+  .airmap-hint{font-size:12.5px;color:var(--ink-faint);line-height:1.5;margin:0;}
+  .airmap-updated{font-size:12.5px;color:var(--ink-soft);font-weight:600;margin:0;min-height:1.1em;}
+  .airmap-updated.stale{color:var(--haze);}
+  .secic-check{animation:secic-float 5s ease-in-out infinite;}
+  .secic-check__tick{transform-origin:15px 15px;animation:secic-pulse 3s ease-in-out infinite;}
+  .secic-map{animation:secic-drift 4.5s ease-in-out infinite;}
+  .secic-map__ping{transform-origin:16px 13px;animation:secic-pulse 2.4s ease-in-out infinite;}
+  @media (max-width:760px){
+    .airmap-card{flex-direction:column;align-items:center;gap:18px;}
+    #airmapSvg{height:auto;width:100%;max-width:330px;}
+    .airmap-side{min-width:0;width:100%;}
+    .airmap-legend{flex-direction:row;flex-wrap:wrap;gap:9px 16px;justify-content:center;}
+    .chk-tabs{display:flex;width:100%;border-radius:16px;}
+    .chk-tab{flex:1;border-radius:12px;padding:11px 10px;font-size:12.5px;}
+  }
 
   .srcgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;justify-content:center;margin-top:8px;}
   .src{padding:18px;border-radius:16px;}
@@ -446,7 +497,7 @@
   @media print{
     @page{ margin:14mm; }
     html,body{ background:#fff !important; color:#1b1830 !important; }
-    #ditherBg,#bgTint,.topbar,.hero-copy,.steps,#gateHint,#exportBtn,.viewtabs,.status,#acLive,.sr-only,.pchips,.fr-clear,#chartTip{ display:none !important; }
+    #ditherBg,#bgTint,.topbar,.hero-copy,.steps,#gateHint,#exportBtn,.viewtabs,.status,#acLive,.sr-only,.pchips,.fr-clear,#chartTip,#airmap,.chk-tabs,.airmap-tip{ display:none !important; }
     .hero{ padding:0 !important; }
     .hero::before{ display:none !important; }
     .wrap{ max-width:none !important; padding:0 !important; margin:0 !important; }
@@ -460,7 +511,7 @@
     .place{ margin:0 0 16px !important; padding:14px 16px !important; }
     section{ break-inside:auto; page-break-inside:auto; margin:0 0 18px !important; padding:0 !important; }
     .sec-h{ break-after:avoid; page-break-after:avoid; margin-bottom:12px !important; padding-bottom:9px !important; }
-    .callout,.fcard,.dcard,.src,.mrow,.peakbox,.vizcard,.tablecard,.place,#floorReport{ break-inside:avoid; page-break-inside:avoid; }
+    .callout,.fcard,.dcard,.src,.mrow,.peakbox,.vizcard,.tablecard,.place,#floorReport,.chk-item{ break-inside:avoid; page-break-inside:avoid; }
     h1,h2,h3{ color:#1b1830 !important; }
     p,.soft,.faint,td,th,li,.lab,.val,.sec-lead{ color:#3a3556 !important; }
     a{ color:#5a3fc0 !important; text-decoration:none; }
@@ -829,6 +880,41 @@
       <span class="adv-disc" data-i18n="adv_disc">General guidance, not medical advice.</span></div>
   </section>
 
+  <section id="checklist">
+    <div class="sec-h"><svg class="secic secic-check" viewBox="0 0 32 32" width="30" height="30" aria-hidden="true" focusable="false">
+      <g opacity="0.3" transform="translate(1.3,1.4)"><rect x="7" y="5" width="18" height="22" rx="3" fill="var(--violet)"/></g>
+      <rect x="7" y="5" width="18" height="22" rx="3" fill="none" stroke="currentColor" stroke-width="2"/>
+      <rect x="12" y="3" width="8" height="4.5" rx="1.6" fill="currentColor"/>
+      <path class="secic-check__tick" d="M11 15l3 3 6-6" fill="none" stroke="var(--violet)" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg><h2 data-i18n="chk_h">Before you buy, ask</h2></div>
+    <p class="sec-lead" data-i18n="chk_lead">The score points you to the right floors. These questions and papers help you weigh the building behind them. Carry this list to the site visit.</p>
+    <div class="chk-tabs" role="tablist" aria-label="Buyer guidance" data-i18n-aria="chk_aria">
+      <button type="button" class="chk-tab active" id="chk-tab-q" data-panel="q" role="tab" aria-selected="true" aria-controls="chk-panel-q" tabindex="0" data-i18n="chk_tab_q">Questions for the developer</button>
+      <button type="button" class="chk-tab" id="chk-tab-d" data-panel="d" role="tab" aria-selected="false" aria-controls="chk-panel-d" tabindex="-1" data-i18n="chk_tab_d">Documents to request</button>
+    </div>
+    <ol class="chk-panel chk-list" id="chk-panel-q" data-panel="q" role="tabpanel" aria-labelledby="chk-tab-q" tabindex="0">
+      <li class="chk-item"><span class="chk-num">1</span><div><span class="chk-t" data-i18n="chk_q1_t">Distance from the road</span><span class="chk-b" data-i18n="chk_q1_b">How many metres set the tower back from the nearest busy road, and which way do the bedrooms face?</span></div></li>
+      <li class="chk-item"><span class="chk-num">2</span><div><span class="chk-t" data-i18n="chk_q2_t">Generator and basement exhaust</span><span class="chk-b" data-i18n="chk_q2_b">Where do the diesel generator and car-park exhausts vent, and which floors sit in their path?</span></div></li>
+      <li class="chk-item"><span class="chk-num">3</span><div><span class="chk-t" data-i18n="chk_q3_t">Cross ventilation</span><span class="chk-b" data-i18n="chk_q3_b">Is every flat drawn for cross ventilation, or do some rooms open to only one side?</span></div></li>
+      <li class="chk-item"><span class="chk-num">4</span><div><span class="chk-t" data-i18n="chk_q4_t">Sewage plant location</span><span class="chk-b" data-i18n="chk_q4_b">Where is the sewage treatment plant, and how far is it from the lowest homes?</span></div></li>
+      <li class="chk-item"><span class="chk-num">5</span><div><span class="chk-t" data-i18n="chk_q5_t">Windows that open</span><span class="chk-b" data-i18n="chk_q5_b">On the floor you are considering, do the windows truly open, or is the tower sealed for full-time air conditioning?</span></div></li>
+      <li class="chk-item"><span class="chk-num">6</span><div><span class="chk-t" data-i18n="chk_q6_t">What sits within a kilometre</span><span class="chk-b" data-i18n="chk_q6_b">Is there a highway, a factory, a landfill, or a years-long construction site close by?</span></div></li>
+      <li class="chk-item"><span class="chk-num">7</span><div><span class="chk-t" data-i18n="chk_q7_t">What comes up next</span><span class="chk-b" data-i18n="chk_q7_b">What is approved for the empty plots around this project over the next five years?</span></div></li>
+      <li class="chk-item"><span class="chk-num">8</span><div><span class="chk-t" data-i18n="chk_q8_t">Fresh-air upkeep</span><span class="chk-b" data-i18n="chk_q8_b">If higher floors rely on mechanical fresh-air units, who changes the filters and how often?</span></div></li>
+    </ol>
+    <ol class="chk-panel chk-list" id="chk-panel-d" data-panel="d" role="tabpanel" aria-labelledby="chk-tab-d" tabindex="0" hidden>
+      <li class="chk-item"><span class="chk-num">1</span><div><span class="chk-t" data-i18n="chk_d1_t">Sanctioned building plan</span><span class="chk-b" data-i18n="chk_d1_b">The plan approved by the local authority, showing the tower's real position, height and setbacks.</span></div></li>
+      <li class="chk-item"><span class="chk-num">2</span><div><span class="chk-t" data-i18n="chk_d2_t">Occupancy Certificate</span><span class="chk-b" data-i18n="chk_d2_b">The OC confirms the building is legally fit to live in; do not take possession without it.</span></div></li>
+      <li class="chk-item"><span class="chk-num">3</span><div><span class="chk-t" data-i18n="chk_d3_t">RERA registration</span><span class="chk-b" data-i18n="chk_d3_b">The project's RERA number and page, where approvals, timelines and complaints stay on public record.</span></div></li>
+      <li class="chk-item"><span class="chk-num">4</span><div><span class="chk-t" data-i18n="chk_d4_t">Pollution board consent</span><span class="chk-b" data-i18n="chk_d4_b">The State Pollution Control Board consent to operate the diesel generators and the sewage plant.</span></div></li>
+      <li class="chk-item"><span class="chk-num">5</span><div><span class="chk-t" data-i18n="chk_d5_t">Environmental clearance</span><span class="chk-b" data-i18n="chk_d5_b">For larger projects, the clearance and its conditions on air, dust and green cover.</span></div></li>
+      <li class="chk-item"><span class="chk-num">6</span><div><span class="chk-t" data-i18n="chk_d6_t">Fire safety NOC</span><span class="chk-b" data-i18n="chk_d6_b">The fire department no-objection certificate for the tower's height and its escape routes.</span></div></li>
+      <li class="chk-item"><span class="chk-num">7</span><div><span class="chk-t" data-i18n="chk_d7_t">Sewage plant test reports</span><span class="chk-b" data-i18n="chk_d7_b">Recent reports showing the plant meets discharge norms, so odour and fumes stay in check.</span></div></li>
+      <li class="chk-item"><span class="chk-num">8</span><div><span class="chk-t" data-i18n="chk_d8_t">Structural stability certificate</span><span class="chk-b" data-i18n="chk_d8_b">Proof of structural soundness, which matters most for a resale or an older building.</span></div></li>
+    </ol>
+    <span class="adv-disc" data-i18n="chk_disc">General guidance for apartment buyers in India, not legal advice.</span>
+  </section>
+
   <section id="sources">
     <div class="sec-h"><svg class="secic secic-sources" viewBox="0 0 32 32" width="30" height="30" aria-hidden="true" focusable="false">
   <circle class="secic-sources__ring" cx="16" cy="13.5" r="9" fill="none" stroke="var(--violet)" stroke-width="1" opacity="0"/>
@@ -842,6 +928,33 @@
     <p class="sec-lead" data-i18n="s7_lead">Every live number on this page is fetched at the moment you search, from named scientific sources, and time-stamped. No number is invented or cached from memory.</p>
     <div class="srcgrid" id="srcGrid"></div>
     <div class="callout glass"><span class="lbl" data-i18n="s7_note_l">Why you can trust these</span><p data-i18n="s7_note_p">Air quality comes from the Copernicus Atmosphere Monitoring Service, a physics-based model run by the EU, not a network of cheap sensors that can drift or be gamed. Elevation comes from the Copernicus 90 m digital terrain model. PIN codes resolve through the official India Post directory. Where a single low-cost station disagrees, treat the model as the steadier reference and re-check on a second day.</p></div>
+  </section>
+
+  <section id="airmap">
+    <div class="sec-h"><svg class="secic secic-map" viewBox="0 0 32 32" width="30" height="30" aria-hidden="true" focusable="false">
+      <g opacity="0.3" transform="translate(1.2,1.4)"><circle cx="16" cy="13" r="7" fill="var(--violet)"/></g>
+      <circle cx="16" cy="13" r="7" fill="none" stroke="currentColor" stroke-width="2"/>
+      <circle class="secic-map__ping" cx="16" cy="13" r="2.6" fill="var(--violet)"/>
+    </svg><h2 data-i18n="map_h">Live air across India</h2></div>
+    <p class="sec-lead" data-i18n="map_lead">The current US AQI at fifty cities, refreshed every five minutes from the Copernicus model. Tap a city to read its air.</p>
+    <div class="airmap-card glass">
+      <div class="airmap-wrap" id="airmapWrap">
+        <svg id="airmapSvg" viewBox="0 0 373 470" role="group" data-i18n-aria="map_aria"></svg>
+        <div class="airmap-tip" id="airmapTip" aria-hidden="true"><span id="airmapTipName" class="amt-name"></span><span id="airmapTipVal" class="amt-val"></span></div>
+      </div>
+      <div class="airmap-side">
+        <div class="airmap-legend" aria-hidden="true">
+          <span class="aml-item"><i style="background:#2fa96b"></i><span data-i18n="cat_good">good</span></span>
+          <span class="aml-item"><i style="background:#c8902c"></i><span data-i18n="cat_mod">moderate</span></span>
+          <span class="aml-item"><i style="background:#dd7f3e"></i><span data-i18n="cat_usg">unhealthy for sensitive</span></span>
+          <span class="aml-item"><i style="background:#d15563"></i><span data-i18n="cat_unh">unhealthy</span></span>
+          <span class="aml-item"><i style="background:#9b5bb0"></i><span data-i18n="cat_vunh">very unhealthy</span></span>
+          <span class="aml-item"><i style="background:#8c4a54"></i><span data-i18n="cat_haz">hazardous</span></span>
+        </div>
+        <p class="airmap-hint" data-i18n="map_hint">Lower is cleaner. Colours follow the US AQI scale.</p>
+        <p class="airmap-updated" id="airmapUpdated" aria-live="polite"></p>
+      </div>
+    </div>
   </section>
 
   <footer>
