@@ -369,121 +369,12 @@ function initChecklist(){
   });
 }
 
-/* ===================== live AQI map of India ===================== */
-var SVGNS='http://www.w3.org/2000/svg';
-function svgEl(name,attrs){ var e=document.createElementNS(SVGNS,name); if(attrs){ for(var k in attrs) e.setAttribute(k,attrs[k]); } return e; }
+/* AQI colour scale, kept for the live-readings scale bar */
 /* refined US-AQI palette, legible on both light and dark map backdrops */
 function aqiColor(a){
   if(a==null) return '#9a94ad';
   if(a<=50) return '#2fa96b'; if(a<=100) return '#c8902c'; if(a<=150) return '#dd7f3e';
   if(a<=200) return '#d15563'; if(a<=300) return '#9b5bb0'; return '#8c4a54';
-}
-var MAPB={latMin:6.5,latMax:37.4,lonMin:67.7,lonMax:97.7};
-var MAP_UNIT=16, MAP_PAD=14;
-function mapMidCos(){ return Math.cos(((MAPB.latMin+MAPB.latMax)/2)*Math.PI/180); }
-function mapVBW(){ return (MAPB.lonMax-MAPB.lonMin)*MAP_UNIT*mapMidCos()+MAP_PAD*2; }
-function mapVBH(){ return (MAPB.latMax-MAPB.latMin)*MAP_UNIT+MAP_PAD*2; }
-function mapX(lon){ return MAP_PAD+(lon-MAPB.lonMin)*MAP_UNIT*mapMidCos(); }
-function mapY(lat){ return MAP_PAD+(MAPB.latMax-lat)*MAP_UNIT; }
-var AQMAP={ built:false, dots:[], cities:[], stamp:null, stale:false, timer:0 };
-
-function buildAirmap(cities){
-  var svg=el('airmapSvg'); if(!svg) return;
-  var geo=window.INDIA_GEO;
-  var VBW=geo?geo.vbw:mapVBW(), VBH=geo?geo.vbh:mapVBH();
-  svg.setAttribute('viewBox','0 0 '+VBW+' '+VBH);
-  while(svg.firstChild) svg.removeChild(svg.firstChild);
-  /* real India landmass (official full-claim boundary), self-hosted SVG, no map tiles */
-  if(geo && geo.paths){
-    var land=svgEl('g',{'class':'airmap-land'});
-    geo.paths.forEach(function(d){ land.appendChild(svgEl('path',{d:d})); });
-    svg.appendChild(land);
-  }
-  AQMAP.dots=[]; AQMAP.cities=cities;
-  cities.forEach(function(c,i){
-    var g=svgEl('g',{'class':'airmap-city', tabindex:'0', role:'button'});
-    g.setAttribute('aria-label', cityMapName(c));
-    var cx=mapX(c.lon), cy=mapY(c.lat);
-    var halo=svgEl('circle',{cx:cx,cy:cy,r:6.4,'class':'airmap-halo'});
-    var dot=svgEl('circle',{cx:cx,cy:cy,r:4.6,'class':'airmap-dot',fill:'#9a94ad'});
-    g.appendChild(halo); g.appendChild(dot);
-    g.__i=i;
-    var show=function(){ showAirmapTip(i, cx, cy); };
-    g.addEventListener('mouseenter',show);
-    g.addEventListener('focus',show);
-    g.addEventListener('click',function(ev){ ev.stopPropagation(); show(); });
-    g.addEventListener('mouseleave',hideAirmapTip);
-    g.addEventListener('blur',hideAirmapTip);
-    g.addEventListener('keydown',function(ev){ if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); show(); } });
-    svg.appendChild(g);
-    AQMAP.dots.push({g:g,dot:dot,halo:halo,aqi:null,cx:cx,cy:cy});
-  });
-  AQMAP.built=true;
-}
-function cityMapName(c){ return (c.name&&(c.name[LANG]||c.name.en))||''; }
-function showAirmapTip(i,cx,cy){
-  var tip=el('airmapTip'), wrap=el('airmapWrap'), svg=el('airmapSvg'); if(!tip||!wrap||!svg) return;
-  var c=AQMAP.cities[i], d=AQMAP.dots[i]; if(!c||!d) return;
-  el('airmapTipName').textContent=cityMapName(c);
-  var v=el('airmapTipVal'), dot=el('airmapTipDot');
-  if(d.aqi==null){ v.textContent=T('map_na'); if(dot) dot.style.display='none'; }
-  else { v.textContent=Math.round(d.aqi)+' '+T('cat_'+catKey(d.aqi)); if(dot){ dot.style.display=''; dot.style.background=aqiColor(d.aqi); } }
-  /* place the tip over the dot, converting viewBox coords to pixels */
-  var r=svg.getBoundingClientRect(), wr=wrap.getBoundingClientRect();
-  var VBW=mapVBW(), VBH=mapVBH();
-  var px=r.left-wr.left + (cx/VBW)*r.width;
-  var py=r.top-wr.top + (cy/VBH)*r.height;
-  tip.style.top=py+'px';
-  tip.classList.add('show');
-  var half=tip.offsetWidth/2, wrw=wrap.clientWidth, m=6;
-  px=Math.max(half+m, Math.min(wrw-half-m, px));
-  tip.style.left=px+'px';
-  AQMAP.dots.forEach(function(o){ o.g.classList.remove('sel'); });
-  d.g.classList.add('sel');
-}
-function hideAirmapTip(){ var tip=el('airmapTip'); if(tip) tip.classList.remove('show'); }
-function catKey(a){ if(a<=50)return 'good'; if(a<=100)return 'mod'; if(a<=150)return 'usg'; if(a<=200)return 'unh'; if(a<=300)return 'vunh'; return 'haz'; }
-function airmapStampText(){
-  var lbl=el('airmapUpdated'); if(!lbl) return;
-  if(AQMAP.stale){ lbl.textContent=T('map_stale'); lbl.classList.add('stale'); return; }
-  lbl.classList.remove('stale');
-  if(AQMAP.stamp){ var d=AQMAP.stamp; var hh=('0'+d.getHours()).slice(-2), mm=('0'+d.getMinutes()).slice(-2); lbl.textContent=T('map_updated').replace('{time}', hh+':'+mm); }
-  else lbl.textContent='';
-}
-function airmapLabel(i){ var c=AQMAP.cities[i], d=AQMAP.dots[i]; if(!c||!d) return ''; var nm=cityMapName(c); return d.aqi==null ? nm+', '+T('map_na') : nm+', AQI '+Math.round(d.aqi)+', '+T('cat_'+catKey(d.aqi)); }
-function refreshAirmap(){
-  if(!AQMAP.built || !AQMAP.cities.length) return;
-  if(document.hidden) return;
-  var cities=AQMAP.cities;
-  var lats=cities.map(function(c){ return c.lat; }).join(',');
-  var lons=cities.map(function(c){ return c.lon; }).join(',');
-  var url='https://air-quality-api.open-meteo.com/v1/air-quality?timezone=auto&current=us_aqi&latitude='+lats+'&longitude='+lons;
-  fetch(url).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(j){
-    var arr=Array.isArray(j)?j:[j];
-    if(arr.length!==cities.length) throw 0;
-    arr.forEach(function(row,i){
-      var a=row&&row.current&&row.current.us_aqi; var d=AQMAP.dots[i]; if(!d) return;
-      d.aqi=(a==null?null:a);
-      d.dot.setAttribute('fill', aqiColor(d.aqi));
-      d.g.setAttribute('aria-label', airmapLabel(i));
-    });
-    AQMAP.stale=false; AQMAP.stamp=new Date(); airmapStampText();
-  }).catch(function(){ AQMAP.stale=true; airmapStampText(); });
-}
-function initAirmap(){
-  var svg=el('airmapSvg'); if(!svg) return;
-  loadCityProfiles().then(function(j){
-    if(!j || !j.cities || !j.cities.length){ var sec=el('airmap'); if(sec) sec.hidden=true; return; }
-    buildAirmap(j.cities);
-    var started=false;
-    var kick=function(){ if(started) return; started=true; refreshAirmap(); AQMAP.timer=setInterval(refreshAirmap, 300000); };
-    if('IntersectionObserver' in window){
-      var io=new IntersectionObserver(function(ents){ ents.forEach(function(e){ if(e.isIntersecting){ kick(); io.disconnect(); } }); }, {rootMargin:'200px'});
-      io.observe(el('airmap'));
-    } else { kick(); }
-    document.addEventListener('visibilitychange', function(){ if(!document.hidden && started){ var s=AQMAP.stamp; if(!s || (new Date()-s)>300000) refreshAirmap(); } });
-    document.addEventListener('click', hideAirmapTip);
-  });
 }
 
 function pressureHpa(altM){ return 1013.25*Math.exp(-altM/8000); }
@@ -1486,7 +1377,6 @@ function applyLang(lang){
   document.querySelectorAll('.lang .pill').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-lang')===lang); });
   window.__floorsWord = T('floors_suffix'); if(typeof window.initHeightControl==='function') window.initHeightControl();
   positionGlider(); renderTier(); renderAQ(); renderSources(); renderCityNote(); redrawCharts();
-  airmapStampText(); hideAirmapTip(); if(AQMAP.built){ AQMAP.dots.forEach(function(d,i){ d.g.setAttribute('aria-label', airmapLabel(i)); }); }
 }
 
 /* ============================ location detection (India only) ============================ */
@@ -1521,7 +1411,6 @@ function init(){
   initChartInteract();
   initAdvice();
   initChecklist();
-  initAirmap();
   window.applyFloors = function(n){
     STATE.floors = (n==null) ? null : Math.max(2, Math.min(120, Math.round(n)));
     window.__floors = STATE.floors;

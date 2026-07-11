@@ -101,16 +101,16 @@
   .brand-mark{display:inline-flex;border-radius:9px;box-shadow:var(--glow);line-height:0;}
   .brand-logo{display:block;width:28px;height:28px;}
   .brand-logo .af-sheen{transform-box:fill-box;transform-origin:center;animation:afSheen 5s ease-in-out infinite;}
-  .brand-logo .af-floor{transform-box:fill-box;transform-origin:center;animation:afFloor 2.8s ease-in-out infinite;}
-  .brand-logo .af-glow{transform-box:fill-box;transform-origin:center;animation:afGlow 2.8s ease-in-out infinite;}
+  .brand-logo .af-cloud1{transform-box:fill-box;transform-origin:center;animation:afCloud1 7.5s ease-in-out infinite;}
+  .brand-logo .af-cloud2{transform-box:fill-box;transform-origin:center;animation:afCloud2 10s ease-in-out infinite;}
   .brand-logo .af-rise{transform-box:fill-box;transform-origin:center;}
   .brand-logo .af-rise1{animation:afRise 3s ease-in infinite;}
   .brand-logo .af-rise2{animation:afRise 3s ease-in infinite;animation-delay:1.5s;}
   @keyframes afSheen{0%,8%{transform:translateX(-16px);opacity:0;}28%{opacity:.8;}52%{transform:translateX(30px);opacity:0;}100%{transform:translateX(30px);opacity:0;}}
-  @keyframes afFloor{0%,100%{opacity:.85;}50%{opacity:1;}}
-  @keyframes afGlow{0%,100%{opacity:.25;transform:scale(.85);}50%{opacity:.7;transform:scale(1.08);}}
+  @keyframes afCloud1{0%,100%{transform:translate(-3px,.4px);}50%{transform:translate(3.5px,-.6px);}}
+  @keyframes afCloud2{0%,100%{transform:translate(3px,-.3px);}50%{transform:translate(-3.5px,.5px);}}
   @keyframes afRise{0%{transform:translateY(5px);opacity:0;}25%{opacity:.95;}75%{opacity:.3;}100%{transform:translateY(-15px);opacity:0;}}
-  @media (prefers-reduced-motion:reduce){.brand-logo .af-sheen,.brand-logo .af-floor,.brand-logo .af-glow,.brand-logo .af-rise{animation:none;}.brand-logo .af-floor{opacity:1;}.brand-logo .af-glow{opacity:.5;transform:scale(1);}.brand-logo .af-sheen,.brand-logo .af-rise{opacity:0;}}
+  @media (prefers-reduced-motion:reduce){.brand-logo .af-sheen,.brand-logo .af-cloud1,.brand-logo .af-cloud2,.brand-logo .af-rise{animation:none;}.brand-logo .af-sheen,.brand-logo .af-rise{opacity:0;}}
   .brand small{font-weight:600;color:var(--ink-faint);font-size:12px;letter-spacing:.02em;}
 
   .lang{position:relative; display:inline-flex; align-items:center; gap:4px; padding:5px;
@@ -440,39 +440,9 @@
   .chk-b{font-size:14px;color:var(--ink-soft);line-height:1.55;}
   #checklist .adv-disc{margin-top:16px;}
 
-  /* live AQI map of India */
-  .airmap-card{display:flex;gap:26px;padding:22px;border-radius:20px;align-items:center;}
-  .airmap-wrap{position:relative;flex:0 0 auto;}
-  #airmapSvg{display:block;height:min(64vh,470px);width:auto;max-width:100%;overflow:visible;}
-  .airmap-land path{fill:var(--land-fill);stroke:var(--land-fill);stroke-width:.7;stroke-linejoin:round;vector-effect:non-scaling-stroke;}
-  .airmap-city{cursor:pointer;}
-  .airmap-city:focus{outline:none;}
-  .airmap-halo{fill:transparent;transition:fill .2s;}
-  .airmap-city:hover .airmap-halo,.airmap-city:focus .airmap-halo,.airmap-city.sel .airmap-halo{fill:rgba(124,92,224,.20);}
-  .airmap-dot{stroke:var(--dot-ring,rgba(20,16,40,.5));stroke-width:1.2;transition:fill .6s ease;}
-  .airmap-city.sel .airmap-dot{stroke:var(--ink);stroke-width:1.7;}
-  .airmap-tip{position:absolute;left:0;top:0;transform:translate(-50%,calc(-100% - 12px));background:#241d3f;color:#fff;padding:7px 11px;border-radius:10px;font-size:12.5px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;box-shadow:0 10px 28px -8px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:1px;z-index:6;}
-  .airmap-tip.show{opacity:1;}
-  .airmap-tip .amt-name{font-weight:700;}
-  .airmap-tip .amt-valrow{display:flex;align-items:center;}
-  .airmap-tip .amt-dot{width:8px;height:8px;border-radius:50%;margin-right:6px;flex:none;}
-  .airmap-tip .amt-val{font-weight:700;font-size:12px;color:#fff;}
-  .airmap-side{display:flex;flex-direction:column;justify-content:center;gap:15px;min-width:190px;}
-  .airmap-legend{display:flex;flex-direction:column;gap:10px;}
-  .aml-item{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--ink-soft);}
-  .aml-item i{width:13px;height:13px;border-radius:4px;flex:none;}
-  .airmap-hint{font-size:12.5px;color:var(--ink-faint);line-height:1.5;margin:0;}
-  .airmap-updated{font-size:12.5px;color:var(--ink-soft);font-weight:600;margin:0;min-height:1.1em;}
-  .airmap-updated.stale{color:var(--haze);}
   .secic-check{animation:secic-float 5s ease-in-out infinite;}
   .secic-check__tick{transform-origin:15px 15px;animation:secic-pulse 3s ease-in-out infinite;}
-  .secic-map{animation:secic-drift 4.5s ease-in-out infinite;}
-  .secic-map__ping{transform-origin:16px 13px;animation:secic-pulse 2.4s ease-in-out infinite;}
   @media (max-width:760px){
-    .airmap-card{flex-direction:column;align-items:center;gap:18px;}
-    #airmapSvg{height:auto;width:100%;max-width:330px;}
-    .airmap-side{min-width:0;width:100%;}
-    .airmap-legend{flex-direction:row;flex-wrap:wrap;gap:9px 16px;justify-content:center;}
     .chk-tabs{display:flex;width:100%;border-radius:16px;}
     .chk-tab{flex:1;border-radius:12px;padding:11px 10px;font-size:12.5px;}
   }
@@ -533,7 +503,7 @@
   @media print{
     @page{ margin:14mm; }
     html,body{ background:#fff !important; color:#1b1830 !important; }
-    #ditherBg,#bgTint,.topbar,.hero-copy,.steps,#gateHint,#exportBtn,.viewtabs,.status,#acLive,.sr-only,.pchips,.fr-clear,#chartTip,#airmap,.chk-tabs,.airmap-tip{ display:none !important; }
+    #ditherBg,#bgTint,.topbar,.hero-copy,.steps,#gateHint,#exportBtn,.viewtabs,.status,#acLive,.sr-only,.pchips,.fr-clear,#chartTip,.chk-tabs{ display:none !important; }
     .hero{ padding:0 !important; }
     .hero::before{ display:none !important; }
     .wrap{ max-width:none !important; padding:0 !important; margin:0 !important; }
@@ -633,7 +603,7 @@
 
 <div class="topbar">
   <div class="wrap topbar-in">
-    <div class="brand"><span class="brand-mark"><svg class="brand-logo" viewBox="0 0 32 32" width="30" height="30" role="img" aria-label="AirFloor logo"><defs><linearGradient id="afGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a78bfa"/><stop offset=".5" stop-color="#8b6fe6"/><stop offset="1" stop-color="#7c5ce0"/></linearGradient><clipPath id="afClip"><rect width="32" height="32" rx="9"/></clipPath><filter id="afGlow" x="-70%" y="-70%" width="240%" height="240%"><feGaussianBlur stdDeviation="1.4"/></filter></defs><rect width="32" height="32" rx="9" fill="url(#afGrad)"/><g clip-path="url(#afClip)"><g class="af-sheen"><rect x="1" y="-8" width="6" height="48" fill="#fff" opacity=".26" transform="rotate(20 16 16)"/></g><rect x="8.5" y="6" width="11.5" height="20" rx="2.3" fill="#fff" opacity=".95"/><rect class="af-glow" x="8.5" y="11.4" width="11.5" height="3.6" rx="1" fill="#3ed69a" filter="url(#afGlow)"/><rect class="af-floor" x="8.5" y="11.6" width="11.5" height="3.2" fill="#39d497"/><rect x="8.5" y="10.7" width="11.5" height="1.05" fill="#7c5ce0"/><rect x="8.5" y="14.9" width="11.5" height="1.05" fill="#7c5ce0"/><rect x="8.5" y="19.1" width="11.5" height="1.05" fill="#7c5ce0"/><circle class="af-rise af-rise1" cx="24.4" cy="21" r="1.35" fill="#fff"/><circle class="af-rise af-rise2" cx="26.4" cy="21" r="1" fill="#fff" opacity=".85"/></g></svg></span> AirFloor <small data-i18n="brand_tag">India | live index</small></div>
+    <div class="brand"><span class="brand-mark"><svg class="brand-logo" viewBox="0 0 32 32" width="30" height="30" role="img" aria-label="AirFloor logo"><defs><linearGradient id="afGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a78bfa"/><stop offset=".5" stop-color="#8b6fe6"/><stop offset="1" stop-color="#7c5ce0"/></linearGradient><clipPath id="afClip"><rect width="32" height="32" rx="9"/></clipPath></defs><rect width="32" height="32" rx="9" fill="url(#afGrad)"/><g clip-path="url(#afClip)"><g class="af-sheen"><rect x="1" y="-8" width="6" height="48" fill="#fff" opacity=".26" transform="rotate(20 16 16)"/></g><g class="af-cloud2" fill="#fff" opacity=".42"><circle cx="8" cy="10" r="2.2"/><circle cx="10.6" cy="9" r="2.7"/><circle cx="13.4" cy="10" r="2.2"/><rect x="6.2" y="10" width="8.6" height="2.4" rx="1.2"/></g><g class="af-cloud1" fill="#fff" opacity=".92"><circle cx="12.6" cy="16.4" r="3.1"/><circle cx="16" cy="14.8" r="4"/><circle cx="19.6" cy="16.4" r="3.2"/><rect x="9.6" y="16.4" width="13" height="3.4" rx="1.7"/></g><circle class="af-rise af-rise1" cx="23.8" cy="24" r="1.35" fill="#fff"/><circle class="af-rise af-rise2" cx="25.8" cy="24" r="1" fill="#fff" opacity=".85"/></g></svg></span> AirFloor <small data-i18n="brand_tag">India | live index</small></div>
     <div class="lang glass-none" role="group" aria-label="Language">
       <span class="glider" id="glider"></span>
       <button type="button" class="pill active" data-lang="en"><span class="globe"><svg viewBox="0 0 256 256" width="13" height="13" fill="currentColor" aria-hidden="true" focusable="false"><path d="M247.15,212.42l-56-112a8,8,0,0,0-14.31,0l-21.71,43.43A88,88,0,0,1,108,126.93,103.65,103.65,0,0,0,135.69,64H160a8,8,0,0,0,0-16H104V32a8,8,0,0,0-16,0V48H32a8,8,0,0,0,0,16h87.63A87.76,87.76,0,0,1,96,116.35a87.74,87.74,0,0,1-19-31,8,8,0,1,0-15.08,5.34A103.63,103.63,0,0,0,84,127a87.55,87.55,0,0,1-52,17,8,8,0,0,0,0,16,103.46,103.46,0,0,0,64-22.08,104.18,104.18,0,0,0,51.44,21.31l-26.6,53.19a8,8,0,0,0,14.31,7.16L148.94,192h70.11l13.79,27.58A8,8,0,0,0,240,224a8,8,0,0,0,7.15-11.58ZM156.94,176,184,121.89,211.05,176Z"/></svg></span>EN</button>
@@ -976,34 +946,6 @@
     <div class="srcgrid" id="srcGrid"></div>
     <div class="callout glass"><span class="lbl" data-i18n="s7_note_l">Why you can trust these</span><p data-i18n="s7_note_p">Air quality comes from the Copernicus Atmosphere Monitoring Service, a physics-based model run by the EU, not a network of cheap sensors that can drift or be gamed. Elevation comes from the Copernicus 90 m digital terrain model. PIN codes resolve through the official India Post directory. Where a single low-cost station disagrees, treat the model as the steadier reference and re-check on a second day.</p></div>
   </section>
-
-  <section id="airmap">
-    <div class="sec-h"><svg class="secic secic-map" viewBox="0 0 32 32" width="30" height="30" aria-hidden="true" focusable="false">
-      <g opacity="0.3" transform="translate(1.2,1.4)"><circle cx="16" cy="13" r="7" fill="var(--violet)"/></g>
-      <circle cx="16" cy="13" r="7" fill="none" stroke="currentColor" stroke-width="2"/>
-      <circle class="secic-map__ping" cx="16" cy="13" r="2.6" fill="var(--violet)"/>
-    </svg><h2 data-i18n="map_h">Live air across India</h2></div>
-    <p class="sec-lead" data-i18n="map_lead">The current US AQI at fifty cities, refreshed every five minutes from the Copernicus model. Tap a city to read its air.</p>
-    <div class="airmap-card glass">
-      <div class="airmap-wrap" id="airmapWrap">
-        <svg id="airmapSvg" viewBox="0 0 473 522" role="group" data-i18n-aria="map_aria"></svg>
-        <div class="airmap-tip" id="airmapTip" aria-hidden="true"><span id="airmapTipName" class="amt-name"></span><span class="amt-valrow"><span class="amt-dot" id="airmapTipDot"></span><span id="airmapTipVal" class="amt-val"></span></span></div>
-      </div>
-      <div class="airmap-side">
-        <div class="airmap-legend" aria-hidden="true">
-          <span class="aml-item"><i style="background:#2fa96b"></i><span data-i18n="cat_good">good</span></span>
-          <span class="aml-item"><i style="background:#c8902c"></i><span data-i18n="cat_mod">moderate</span></span>
-          <span class="aml-item"><i style="background:#dd7f3e"></i><span data-i18n="cat_usg">unhealthy for sensitive</span></span>
-          <span class="aml-item"><i style="background:#d15563"></i><span data-i18n="cat_unh">unhealthy</span></span>
-          <span class="aml-item"><i style="background:#9b5bb0"></i><span data-i18n="cat_vunh">very unhealthy</span></span>
-          <span class="aml-item"><i style="background:#8c4a54"></i><span data-i18n="cat_haz">hazardous</span></span>
-        </div>
-        <p class="airmap-hint" data-i18n="map_hint">Lower is cleaner. Colours follow the US AQI scale.</p>
-        <p class="airmap-updated" id="airmapUpdated" aria-live="polite"></p>
-      </div>
-    </div>
-  </section>
-
   <footer>
     <p data-i18n="foot">AirFloor India | independent environmental and building-microclimate tool | not medical advice. Live air quality: Open-Meteo Air Quality API (Copernicus CAMS). Elevation: Open-Meteo Elevation API (Copernicus DEM GLO-90). Place and PIN lookup: Open-Meteo Geocoding and India Post PIN directory. The floor score is a transparent, physics-informed guide for decisions, not a site measurement.</p>
     <p class="foot-oss"><span data-i18n="oss_line">Free and open source. Made in India, for India.</span> <a href="LICENSE"><span data-i18n="oss_license">MIT License</span></a> | <a href="privacy.html"><span data-i18n="privacy_link">Privacy</span></a> | <a href="README.md">README</a></p>
@@ -1012,7 +954,6 @@
   </footer>
 </div>
 <script src="heightcontrol.js"></script>
-<script src="india-geo.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
