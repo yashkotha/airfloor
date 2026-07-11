@@ -6,6 +6,9 @@
 <meta name="color-scheme" content="light dark">
 <meta name="description" content="See how clean the air is on every apartment floor across India. Live air-quality scores, ranked by real elevation. Free, no signup.">
 <title>AirFloor | Which floor lets you breathe easy?</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta name="theme-color" content="#7c5ce0">
+
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="AirFloor">
 <meta property="og:url" content="https://airfloor.netlify.app/">
@@ -95,8 +98,19 @@
     -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);}
   .topbar-in{display:flex; justify-content:space-between; align-items:center; gap:12px;}
   .brand{display:flex; align-items:center; gap:10px; font-weight:800; letter-spacing:-.02em; font-size:17px;}
-  .brand .dot{width:26px;height:26px;border-radius:8px;background:var(--grad);box-shadow:var(--glow);display:inline-block;position:relative;overflow:hidden;}
-  .brand .dot::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 30% 25%,rgba(255,255,255,.8),transparent 45%);}
+  .brand-mark{display:inline-flex;border-radius:9px;box-shadow:var(--glow);line-height:0;}
+  .brand-logo{display:block;width:28px;height:28px;}
+  .brand-logo .af-sheen{transform-box:fill-box;transform-origin:center;animation:afSheen 5s ease-in-out infinite;}
+  .brand-logo .af-floor{transform-box:fill-box;transform-origin:center;animation:afFloor 2.8s ease-in-out infinite;}
+  .brand-logo .af-glow{transform-box:fill-box;transform-origin:center;animation:afGlow 2.8s ease-in-out infinite;}
+  .brand-logo .af-rise{transform-box:fill-box;transform-origin:center;}
+  .brand-logo .af-rise1{animation:afRise 3s ease-in infinite;}
+  .brand-logo .af-rise2{animation:afRise 3s ease-in infinite;animation-delay:1.5s;}
+  @keyframes afSheen{0%,8%{transform:translateX(-16px);opacity:0;}28%{opacity:.8;}52%{transform:translateX(30px);opacity:0;}100%{transform:translateX(30px);opacity:0;}}
+  @keyframes afFloor{0%,100%{opacity:.85;}50%{opacity:1;}}
+  @keyframes afGlow{0%,100%{opacity:.25;transform:scale(.85);}50%{opacity:.7;transform:scale(1.08);}}
+  @keyframes afRise{0%{transform:translateY(5px);opacity:0;}25%{opacity:.95;}75%{opacity:.3;}100%{transform:translateY(-15px);opacity:0;}}
+  @media (prefers-reduced-motion:reduce){.brand-logo .af-sheen,.brand-logo .af-floor,.brand-logo .af-glow,.brand-logo .af-rise{animation:none;}.brand-logo .af-floor{opacity:1;}.brand-logo .af-glow{opacity:.5;transform:scale(1);}.brand-logo .af-sheen,.brand-logo .af-rise{opacity:0;}}
   .brand small{font-weight:600;color:var(--ink-faint);font-size:12px;letter-spacing:.02em;}
 
   .lang{position:relative; display:inline-flex; align-items:center; gap:4px; padding:5px;
@@ -619,7 +633,7 @@
 
 <div class="topbar">
   <div class="wrap topbar-in">
-    <div class="brand"><span class="dot"></span> AirFloor <small data-i18n="brand_tag">India | live index</small></div>
+    <div class="brand"><span class="brand-mark"><svg class="brand-logo" viewBox="0 0 32 32" width="30" height="30" role="img" aria-label="AirFloor logo"><defs><linearGradient id="afGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a78bfa"/><stop offset=".5" stop-color="#8b6fe6"/><stop offset="1" stop-color="#7c5ce0"/></linearGradient><clipPath id="afClip"><rect width="32" height="32" rx="9"/></clipPath><filter id="afGlow" x="-70%" y="-70%" width="240%" height="240%"><feGaussianBlur stdDeviation="1.4"/></filter></defs><rect width="32" height="32" rx="9" fill="url(#afGrad)"/><g clip-path="url(#afClip)"><g class="af-sheen"><rect x="1" y="-8" width="6" height="48" fill="#fff" opacity=".26" transform="rotate(20 16 16)"/></g><rect x="8.5" y="6" width="11.5" height="20" rx="2.3" fill="#fff" opacity=".95"/><rect class="af-glow" x="8.5" y="11.4" width="11.5" height="3.6" rx="1" fill="#3ed69a" filter="url(#afGlow)"/><rect class="af-floor" x="8.5" y="11.6" width="11.5" height="3.2" fill="#39d497"/><rect x="8.5" y="10.7" width="11.5" height="1.05" fill="#7c5ce0"/><rect x="8.5" y="14.9" width="11.5" height="1.05" fill="#7c5ce0"/><rect x="8.5" y="19.1" width="11.5" height="1.05" fill="#7c5ce0"/><circle class="af-rise af-rise1" cx="24.4" cy="21" r="1.35" fill="#fff"/><circle class="af-rise af-rise2" cx="26.4" cy="21" r="1" fill="#fff" opacity=".85"/></g></svg></span> AirFloor <small data-i18n="brand_tag">India | live index</small></div>
     <div class="lang glass-none" role="group" aria-label="Language">
       <span class="glider" id="glider"></span>
       <button type="button" class="pill active" data-lang="en"><span class="globe"><svg viewBox="0 0 256 256" width="13" height="13" fill="currentColor" aria-hidden="true" focusable="false"><path d="M247.15,212.42l-56-112a8,8,0,0,0-14.31,0l-21.71,43.43A88,88,0,0,1,108,126.93,103.65,103.65,0,0,0,135.69,64H160a8,8,0,0,0,0-16H104V32a8,8,0,0,0-16,0V48H32a8,8,0,0,0,0,16h87.63A87.76,87.76,0,0,1,96,116.35a87.74,87.74,0,0,1-19-31,8,8,0,1,0-15.08,5.34A103.63,103.63,0,0,0,84,127a87.55,87.55,0,0,1-52,17,8,8,0,0,0,0,16,103.46,103.46,0,0,0,64-22.08,104.18,104.18,0,0,0,51.44,21.31l-26.6,53.19a8,8,0,0,0,14.31,7.16L148.94,192h70.11l13.79,27.58A8,8,0,0,0,240,224a8,8,0,0,0,7.15-11.58ZM156.94,176,184,121.89,211.05,176Z"/></svg></span>EN</button>
