@@ -1415,6 +1415,7 @@ function initPreloader(){
   function finish(){
     if(done) return; done=true;
     pl.classList.add('pl-done');
+    if(mark) mark.classList.add('pl-land');   /* freeze the breathing pulse so the flight lands crisp */
     /* FLIP the loading mark into the header logo's slot */
     var target=document.querySelector('.topbar .brand-mark');
     if(target && mark){
