@@ -5,26 +5,25 @@ Two importable workflows for the n8n instance at n8n.yash.cx. Both are also serv
 ## 1. Content refresh (LLM, monthly)
 
 File: `airfloor-content-refresh.json`
-Import URL: `https://airfloor.netlify.app/n8n/airfloor-content-refresh.json`
+Import URL: `https://yashkotha.github.io/airfloor/n8n/airfloor-content-refresh.json`
 
 Runs at 06:00 on the 1st of every month. Fetches the live `cityprofiles.json`, asks an LLM to lightly refresh only the "general" and the current season's texts in all three languages, then hard-validates the result before anything ships: same 50 city ids, coordinates and names byte-identical, every field non-empty, no banned characters. If validation fails, nothing happens.
 
-**It starts in DRY RUN.** In dry-run mode it only emails a review summary. To let it publish, open the Config node and set `DRY_RUN` to `false`. When live, it commits the new file to GitHub and does an incremental Netlify deploy (only `cityprofiles.json` changes; every other file keeps its existing hash).
+**It starts in DRY RUN.** In dry-run mode it only emails a review summary. To let it publish, open the Config node and set `DRY_RUN` to `false`. When live, it commits the new file to GitHub and stops there: the site is served by GitHub Pages, which redeploys on every push to `main`, so no separate deploy step is needed.
 
 Credentials to attach after import:
 - **LLM refresh** node: the existing OpenAI credential (`openAiApi`).
 - **GitHub commit** node: a GitHub credential with a fine-grained token, Contents read/write on `yashkotha/airfloor` only.
-- **Netlify file digest / Create deploy / Upload changed file** nodes: a Netlify credential (`netlifyApi`) with a personal access token from app.netlify.com/user/applications.
 - **Email review / Email published** nodes: an SMTP credential (smtp.office365.com, port 587, STARTTLS works with the existing mailbox).
 
-## 2. Trackers (health + OSS plan)
+## 2. Trackers (health)
 
 File: `airfloor-trackers.json`
-Import URL: `https://airfloor.netlify.app/n8n/airfloor-trackers.json`
+Import URL: `https://yashkotha.github.io/airfloor/n8n/airfloor-trackers.json`
 
-Runs every 6 hours and checks: the site responds and looks like AirFloor, `cityprofiles.json` parses and has its cities, the Open-Meteo air-quality API answers for a sample Indian coordinate, and the Netlify account plan. Failures produce one alert email. If the Netlify plan ever changes away from "Personal" (the Open Source plan landing), it emails a reminder to cancel the paid subscription.
+Runs every 6 hours and checks: the site responds and looks like AirFloor, `cityprofiles.json` parses and has its cities, and the Open-Meteo air-quality API answers for a sample Indian coordinate. Failures produce one alert email.
 
-Credentials to attach after import: the same **Netlify** and **SMTP** credentials as above. The three public HTTP checks need none.
+Credentials to attach after import: the **SMTP** credential above. The three public HTTP checks need none.
 
 ## Import steps
 

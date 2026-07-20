@@ -1,14 +1,10 @@
 # AirFloor
 
-[![Deploys by Netlify](https://www.netlify.com/img/global/badges/netlify-color-accent.svg)](https://www.netlify.com)
-
 **Which floor should you live on? Ask the air.**
-
-This site is powered by [Netlify](https://www.netlify.com).
 
 AirFloor scores every floor of an apartment building in India for how clean and healthy the air is to breathe, using live air-quality data and the real ground elevation for any place in the country. Find the best floors to breathe before you rent or buy.
 
-Live: **https://airfloor.netlify.app**
+Live: **https://yashkotha.github.io/airfloor/**
 Source: **https://github.com/yashkotha/airfloor**
 
 Free and open source. Made in India, for India.
@@ -51,7 +47,7 @@ Then open the printed URL. That is all, there is nothing to build.
 
 ## Deploy
 
-Any static host works. This project is deployed on Netlify with `publish = "."` (see `netlify.toml`).
+Any static host works, since there is no build step. This project is served by GitHub Pages straight from `main` at the repository root. A `.nojekyll` file is present so Pages serves `.well-known/` as-is; push to `main` and the site rebuilds.
 
 ## Privacy
 

@@ -8,7 +8,7 @@
     "email": "yash@dropcap.design",
     "description": "Independent developer and designer. Maintainer of AirFloor, a free and open-source air-health tool built for India.",
     "webpageUrl": {
-      "url": "https://airfloor.netlify.app"
+      "url": "https://yashkotha.github.io/airfloor"
     }
   },
   "projects": [
@@ -17,7 +17,7 @@
       "name": "AirFloor",
       "description": "AirFloor scores every floor of an apartment building in India for how clean and healthy the air is to breathe. It combines live air-quality data (Copernicus CAMS), real ground elevation (Copernicus DEM) and live meteorology (boundary-layer depth, wind at height, atmospheric stability) to model how pollution changes with height, then publishes an honest 0 to 100 score for each floor along with an explicit uncertainty band. Air pollution is one of the largest public-health burdens in India, and the air a family breathes differs meaningfully between the ground floor and the twentieth. That information is normally invisible when people rent or buy a home. AirFloor makes it free, private and available in English, Telugu and Kannada. It is a static site that collects nothing: no accounts, no cookies, no analytics, no backend. Funding is sought to keep it free of ads and paywalls, to cover hosting, a domain and monitoring, and to fund continued maintenance: bias-correcting the model against Indian ground-reference monitors, expanding language coverage, and improving accessibility.",
       "webpageUrl": {
-        "url": "https://airfloor.netlify.app"
+        "url": "https://yashkotha.github.io/airfloor"
       },
       "repositoryUrl": {
         "url": "https://github.com/yashkotha/airfloor",
